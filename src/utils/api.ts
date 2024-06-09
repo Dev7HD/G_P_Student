@@ -1,17 +1,20 @@
 import { ofetch } from 'ofetch';
 
 export const $api = ofetch.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: import.meta.env.VITE_SPRING_BOOT_API_URL,
   async onRequest({ options }) {
-    const accessToken = useCookie('accessToken').value
-    console.log(accessToken);
-    
-    if (accessToken) {
-      options.headers = {
+    // const accessToken = useCookie('accessToken').value
+     options.headers = {
         ...options.headers,
-        Authorization: `Bearer ${accessToken}`,
+        // Authorization: `Bearer ${accessToken}`,
 
       }
-    }
+    // if (accessToken) {
+    //   options.headers = {
+    //     ...options.headers,
+    //     // Authorization: `Bearer ${accessToken}`,
+
+    //   }
+    // }
   },
 })

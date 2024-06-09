@@ -1,18 +1,20 @@
 <script setup lang="ts">
-import { Student } from "@/@core/types";
+import { Payment, Student } from "@/@core/types";
 // import EditDialog from "@/components/Verifications/Dialogs/EditDialog.vue";
-import { useStudentStore } from '@/store/useStudentStore';
-// import dayjs from 'dayjs';
-// import * as XLSX from 'xlsx';
+import { usePaymentStore } from '@/store/usePaymentStore';
+import dayjs from 'dayjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import * as XLSX from 'xlsx';
 
 //👉 - Variables
 // const props = defineProps(['verificationsList', 'isLoading'])
 const search = ref('')
 
 //👉 - Instance of our Store
-const store = useStudentStore()
-const { listeStudents, isLoading } = storeToRefs(store)
-const { fetchAll } = store
+const store = usePaymentStore()
+const { listePayments, isLoading,error } = storeToRefs(store)
+const { fetchAll,editStatusPayment } = store
 
 
 
@@ -31,8 +33,7 @@ const handleChange = () => {
 
 //👉 - Dialogs variables
 const studentData = ref<Student>({})
-const isCarteInfoEditDialogVisible = ref(false)
-const isCarteInfoViewDialogVisible = ref(false)
+const isEditStatusDialogVisible = ref(false)
 
 //👉 - Methode for handling a verification type
 const resolveStatusVerification = (idVerification: number) => {
@@ -48,55 +49,54 @@ const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const headers = [
-  { title: 'Code', key: 'code' },
-  { title: 'Nom et Prénom', key: 'nom_prenom' },
-  // { title: 'الاسم و اللقب', key: 'nomAr_prenomAr' },
-  { title: 'Nom', key: 'lastName' },
-  { title: 'Prénom', key: 'firstName' },
-  { title: 'Filière', key: 'programId' },
-  { title: 'Email', key: 'email' },
-  { title: 'ACTIONS', key: 'actions', sortable: false },
+  { title: 'Nom Complet', key: 'nom_prenom' },
+  { title: 'Date Payment', key: 'date' },
+  { title: 'Amount', key: 'amount' },
+  { title: 'Statut', key: 'status' },
+  { title: 'type', key: 'type' },
+  { title: 'actions', key: 'actions' },
 ]
+//👉 - Methode for Resolving a Status
+const resolveStatus = (status: string) => {
+  if (status === 'CREATED')
+    return { text: 'Created', color: 'primary', icon: 'tabler-check' }
+  else if (status === 'VALIDATED')
+    return { text: 'Validated', color: 'success', icon: 'tabler-checks' }
+  else if (status === 'REJECTED')
+    return { text: 'Rejected', color: 'error', icon: 'tabler-ban' }
+  return { text: 'Pending', color: 'warning', icon: 'tabler-dots' }
+}
 
-//👉 - Computed Functions
-// const totalOrder = computed(() => props.verificationsList.length)
+const resolveType = (type: string) => {
+  if (type === 'CHECK')
+    return { text: 'CHECK', color: 'info', icon: 'tabler-check' }
+  else if (type === 'TRANSFER')
+    return { text: 'TRANSFER', color: 'primary', icon: 'tabler-checks' }
+  else if (type === 'CASH')
+    return { text: 'CASH', color: 'light', icon: 'tabler-checks' }
+  return { text: 'DEPOSIT', color: 'warning', icon: 'tabler-ban' }
+}
 
-
-
+const isEditDialogVisible = ref(false)
 // SECTION METHODES
 //👉 - Methode for deleting an Item 
 const deleteItem = (itemId: number) => {
   if (!props.verificationsList)
     return
-
-  console.log(itemId);
-
+  console.log(itemId)
 }
 
-//👉 - Methode for Resolving a Status
-const resolveStatus = (status: string) => {
-  if (status === 'Confirmed')
-    return { text: 'Confirmed', color: 'success', icon: 'tabler-check' }
-  else if (status === 'Completed')
-    return { text: 'Completed', color: 'primary', icon: 'tabler-checks' }
-  else if (status === 'Cancelled')
-    return { text: 'Cancelled', color: 'error', icon: 'tabler-ban' }
-  return { text: 'Pending', color: 'warning', icon: 'tabler-dots' }
 
-}
-
+const editPayment = ref<Payment>({})
 //👉 - Methode for modifying an item
-const editItem = (item: Carte) => {
-  carteData.value = item
-  isCarteInfoEditDialogVisible.value = true
+const editStatus = (item) => {
+  editPayment.value = item
+  isEditStatusDialogVisible.value = true
 }
 
 //👉 - Methode for showing an item
 const showItem = (item: Carte) => {
-  console.log(item);
   carteData.value = item
-  console.log(carteData.value);
-
   isCarteInfoViewDialogVisible.value = true
 }
 //👉 - Methode for handling format of the date naissance 
@@ -128,34 +128,41 @@ const addVerification = () => {
 
 //👉 - Methode for export data to Excell
 const exportToExcell = () => {
-  const worksheet = XLSX.utils.json_to_sheet(props.verificationsList);
+  const worksheet = XLSX.utils.json_to_sheet(paymentsList.value);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste_Des_Cartes');
-  XLSX.writeFile(workbook, 'liste_globale_carte.xlsx');
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste_Des_Payments');
+  XLSX.writeFile(workbook, 'liste_globale_payments.xlsx');
 }
 
 
-// const isLoaded = computed(() => listeStudents.value.length === 0)
-// const isLoaded = ref(listeStudents.value)
+// const isLoaded = computed(() => listePayments.value.length === 0)
+// const isLoaded = ref(listePayments.value)
 
 //👉 - Providing CarteList to DataTable
-const studentsList = ref([])
+const paymentsList = ref([])
 const loading = ref(false) 
 const GetData = () => {
-  studentsList.value = listeStudents.value.map(item => {
-    console.table(item);
-    
+  paymentsList.value = listePayments.value.map(item => {
     return {
       ...item,
-      nom_prenom: `${item.lastName} ${item.firstName}`,
+      nom_prenom: `${item.student.lastName} ${item.student.firstName}`,
     }
   })
+}
+const updateStatus =  (editPayment)=>{
+
+  console.table(editPayment)
+  editStatusPayment(editPayment.id,editPayment.status)
+    .then(()=>{
+    toast.success("Status is Updated !.", {
+        autoClose: 2000,position:"top-center"
+      }); 
+  })
+  
 
 }
 
-
 onMounted(() => {
- 
       loading.value = true
       fetchAll().then((res)=>{
         setTimeout(() => {
@@ -163,32 +170,14 @@ onMounted(() => {
           loading.value = false
         }, 1000);
       })
-      
- 
 })
 </script>
 
 
 <template>
 
-<!-- <v-btn color="success" @click="isConfirmDialogVisible=true">text</v-btn>
-<v-btn color="success" @click="isErrorDialogVisible=true">error</v-btn>
-
-  <ConfirmationDialog  
-      v-model:isDialogVisible="isConfirmDialogVisible"
-      confirmation-question="Voulez-vous vraiment sauvegarder ces modifications ?" 
-      title="Confirmation " 
-      @confirm="console.log('iklikj')"/>
-
- <ErrorDialog  
-      v-model:isDialogVisible="isErrorDialogVisible"
-      error-msg ="Aucune Personne Identifiée avec ce cni => " 
-      title="CNIE Introuvable." 
-      @confirm="console.log('ok')"/> -->
-
-
   <VCard no-padding>
-    <VCardTitle class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">LISTE DES ETUDIANTS
+    <VCardTitle class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">LISTE DES PAIEMENTS
       </span></VCardTitle>
     <div>
 
@@ -198,28 +187,26 @@ onMounted(() => {
           <VCol cols="12" md="5">
             <VTextField density="comfortable" label="Recherche Multicritère" variant="filled"
               prepend-inner-icon="tabler-search" v-model="search"
-              placeholder="Recherchez par cni, matricule, status..." />
+              placeholder="Recherchez par student, type, amount, status, ..." />
           </VCol>
 
-          <div>
+          <!-- <div>
             <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter"
               @click="exportToExcell" />
-            <VBtn variant="flat" color="primary" @click="addVerification">
-              <v-icon icon="tabler-new-section" size="20" start> </v-icon>Nouvelle étudiant
-            </VBtn>
-          </div>
+           
+          </div> -->
         </div>
       </VCardText>
 
 
 
-      <div v-if="!listeStudents" class="text-center">
+      <div v-if="!listePayments" class="text-center">
         <VProgressLinear color="primary" indeterminate height="2" />
       </div>
       <!-- 👉 Data Table  -->
       <div v-else>
-        <div v-if="listeStudents.length > 0">
-          <VDataTable :loading="loading"  :headers="headers" :items="studentsList" :search="search"
+        <div v-if="listePayments.length > 0">
+          <VDataTable :loading="loading"  :headers="headers" :items="paymentsList" :search="search"
             v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
 
            
@@ -231,9 +218,9 @@ onMounted(() => {
 
             <template #item.nom_prenom="{ item }">
               <div class="d-flex align-center gap-x-3">
-                <VAvatar variant="tonal" color="secondary" size="40">{{ getAvatarText(item.lastName, item.firstName) }}
+                <VAvatar variant="tonal" color="secondary" size="40">{{ getAvatarText(item.student.lastName, item.student.firstName) }}
                 </VAvatar>
-                <span>{{ item.lastName }} {{ item.firstName }}</span>
+                <span>{{ item.student.lastName }} {{ item.student.firstName }}</span>
               </div>
             </template>
 
@@ -241,13 +228,25 @@ onMounted(() => {
               <span>{{ getDateNaissance(item?.date_naissance) }}</span>
             </template> -->
 
-            <!-- <template #item.status="{ item }">
-              <VChip size="small" :color="resolveStatus(item.status)?.color">
-                <VIcon size="x-small" start :icon="resolveStatus(item.status)?.icon" /> 
+            <template #item.status="{ item }">
+              <VChip variant="outlined" size="small" :color="resolveStatus(item.status)?.color">
                 <b class="text-uppercase"> {{ resolveStatus(item.status)?.text }}</b>
+                <VIcon size="x-small" end :icon="resolveStatus(item.status)?.icon" /> 
               </VChip>
-            </template> -->
-<!-- 
+            </template>
+
+
+            <template #item.type="{ item }">
+              <VChip :label="false" size="small" :color="resolveType(item.type)?.color">
+                <b class="text-uppercase"> {{ resolveType(item.type)?.text }}</b>
+              </VChip>
+            </template>
+
+            <template #item.amount="{item}">
+               {{ item.amount }}<span class="font-weight-bold"> DH </span>
+            </template>
+
+            <!-- 
             <template #item.id_verification="{ item }">
               <VChip size="small" :color="resolveStatusVerification(item.id_verification)?.color">
                 <VIcon size="x-small" start :icon="resolveStatusVerification(item.id_verification)?.icon" />
@@ -257,8 +256,9 @@ onMounted(() => {
 
             <!-- ACTIONS -->
             <template #item.actions="{ item }">
-              <IconBtn class="me-2 " @click="showItem(item)">
-                <VIcon color="secondary" icon="tabler-eye" />
+              <IconBtn class="me-2 " @click="editStatus(item)">
+                <VIcon color="secondary" icon="tabler-edit
+                " />
               </IconBtn>
              <!-- <IconBtn @click="editItem(item)">
                 <VIcon color="primary" icon="tabler-edit" />
@@ -273,14 +273,14 @@ onMounted(() => {
             <!-- pagination -->
 
             <template #bottom>
-              <VCardText v-if="listeStudents" class="pt-2">
+              <VCardText v-if="listePayments" class="pt-2">
                 <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
                   <VSelect v-model="options.itemsPerPage" :items="paginationItems"
                     style="max-inline-size: 8rem;min-inline-size: 5rem;  font-size: 95px;" label="Lignes par page :"
                     variant="filled" @update:model-value="handleChange" />
 
                   <VPagination v-model="options.page" :total-visible="$vuetify.display.smAndDown ? 3 : 4"
-                    :length="Math.ceil(listeStudents.length / options.itemsPerPage)" rounded="circle"
+                    :length="Math.ceil(listePayments.length / options.itemsPerPage)" rounded="circle"
                     active-color="primary" />
                 </div>
               </VCardText>
@@ -298,10 +298,10 @@ onMounted(() => {
   <!-- <EditDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoEditDialogVisible"/>
  -->
 
-  <ViewDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoViewDialogVisible" />
-
-  <EditDialogDrawer :carte-data="carteData" v-model:isDrawerOpen="isCarteInfoEditDialogVisible"
-    @on-update="updateCarte" />
+  <!-- <ViewDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoViewDialogVisible" /> -->
+<EditStatusPaymentDrawer :edit-payment="editPayment" v-model:isDrawerOpen="isEditStatusDialogVisible"
+    @on-update="updateStatus" />
+  
 
 </template>
 

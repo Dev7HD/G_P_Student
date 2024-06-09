@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Student } from "@/@core/types";
-// import EditDialog from "@/components/Verifications/Dialogs/EditDialog.vue";
 import { useStudentStore } from '@/store/useStudentStore';
-// import dayjs from 'dayjs';
-// import * as XLSX from 'xlsx';
+import axios from "axios";
+import dayjs from 'dayjs';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
+import * as XLSX from 'xlsx';
+
 
 //👉 - Variables
 // const props = defineProps(['verificationsList', 'isLoading'])
@@ -12,7 +15,7 @@ const route = useRoute()
 //👉 - Instance of our Store
 const store = useStudentStore()
 const { listeStudents, isLoading } = storeToRefs(store)
-const { fetchAll } = store
+const { fetchAll,updateOne } = store
 
 
 
@@ -31,27 +34,21 @@ const handleChange = () => {
 
 //👉 - Dialogs variables
 const studentData = ref<Student>({})
-const isCarteInfoEditDialogVisible = ref(false)
-const isCarteInfoViewDialogVisible = ref(false)
+const isAjoutEtudiantDialogVisible = ref(false)
+const isDeleteDialogVisible = ref(false)
 
-//👉 - Methode for handling a verification type
-const resolveStatusVerification = (idVerification: number) => {
-  if (idVerification === null)
-    return { text: 'Non Verifiée', color: 'error', icon: 'tabler-ban' }
-  else
-    return { text: 'Verifiée', color: 'success', icon: 'tabler-check' }
-}
+
 
 //👉 - Data table options
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const headers = [
   { title: 'Code', key: 'code' },
-  { title: 'Nom et Prénom', key: 'nom_prenom' },
+  { title: 'Nom Complet', key: 'nom_prenom' },
   // { title: 'الاسم و اللقب', key: 'nomAr_prenomAr' },
- 
+
   { title: 'Filière', key: 'programId' },
   { title: 'Email', key: 'email' },
   { title: 'ACTIONS', key: 'actions', sortable: false },
@@ -61,6 +58,25 @@ const headers = [
 // const totalOrder = computed(() => props.verificationsList.length)
 
 
+const isEditStudentDialogVisible = ref(false)
+const editStudent = ref<Student>({})
+
+const editerStudent = (item)=>{
+  editStudent.value = item
+  isEditStudentDialogVisible.value = true
+}
+
+
+
+
+const updateStudent = (editStudent)=>{
+  updateOne(editStudent).then(()=>{
+    
+      toast.success("Your Student is Updated !", {
+        autoClose: 1000,position:"top-center"
+      }); 
+  })
+}
 
 // SECTION METHODES
 //👉 - Methode for deleting an Item 
@@ -85,10 +101,21 @@ const resolveStatus = (status: string) => {
 }
 
 
+const resolveProgramId = (programId: string) => {
+  if (programId === 'ISI')
+    return { text: 'ISI', color: 'info' }
+  else if (programId === 'GI')
+    return { text: 'GI', color: 'success' }
+  else if (programId === 'MF')
+    return { text: 'MF', color: 'error' }
+  return { text: 'IIR', color: 'warning' }
+
+}
+
 //👉 - Methode for showing a student
 const showItem = (item: Student) => {
   console.table(item);
-  
+
 }
 //👉 - Methode for handling format of the date naissance 
 const getDateNaissance = (date: Date) => {
@@ -119,10 +146,10 @@ const addVerification = () => {
 
 //👉 - Methode for export data to Excell
 const exportToExcell = () => {
-  const worksheet = XLSX.utils.json_to_sheet(props.verificationsList);
+  const worksheet = XLSX.utils.json_to_sheet(studentsList.value);
   const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste_Des_Cartes');
-  XLSX.writeFile(workbook, 'liste_globale_carte.xlsx');
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste_Des_Students');
+  XLSX.writeFile(workbook, 'liste_globale_students.xlsx');
 }
 
 
@@ -131,9 +158,9 @@ const exportToExcell = () => {
 
 //👉 - Providing CarteList to DataTable
 const studentsList = ref([])
-const loading = ref(false) 
+const loading = ref(false)
 const GetData = () => {
-  studentsList.value = listeStudents.value.map(item => {    
+  studentsList.value = listeStudents.value.map(item => {
     return {
       ...item,
       nom_prenom: `${item.lastName} ${item.firstName}`,
@@ -141,40 +168,54 @@ const GetData = () => {
   })
 
 }
+const addEtudiant = async (etudiant) => {
+  console.log(etudiant);
+  await axios.post(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/students/new`,
 
+    {
+      firstName: etudiant.firstName,
+      lastName: etudiant.lastName,
+      email: etudiant.email,
+      code: etudiant.code,
+      programId: etudiant.programId
+    }
+
+  ).catch((err)=>{
+     toast.error(err.message, {
+        autoClose: 2000,position:"top-center"
+      }); 
+  })
+
+
+  fetchAll().then((res) => {
+    setTimeout(() => {
+      GetData()
+      loading.value = false
+    }, 1000)
+  }).then(()=>{
+    toast.success("Your Student is Added !", {
+        autoClose: 2000,position:"top-center"
+      }); 
+  })
+
+}
 
 onMounted(() => {
- 
-      loading.value = true
-      fetchAll().then((res)=>{
-        setTimeout(() => {
-          GetData()
-          loading.value = false
-        }, 1000);
-      })
-      
- 
+
+  loading.value = true
+  fetchAll().then((res) => {
+    setTimeout(() => {
+      GetData()
+      loading.value = false
+    }, 1000);
+  })
+
+
 })
 </script>
 
 
 <template>
-
-<!-- <v-btn color="success" @click="isConfirmDialogVisible=true">text</v-btn>
-<v-btn color="success" @click="isErrorDialogVisible=true">error</v-btn>
-
-  <ConfirmationDialog  
-      v-model:isDialogVisible="isConfirmDialogVisible"
-      confirmation-question="Voulez-vous vraiment sauvegarder ces modifications ?" 
-      title="Confirmation " 
-      @confirm="console.log('iklikj')"/>
-
- <ErrorDialog  
-      v-model:isDialogVisible="isErrorDialogVisible"
-      error-msg ="Aucune Personne Identifiée avec ce cni => " 
-      title="CNIE Introuvable." 
-      @confirm="console.log('ok')"/> -->
-
 
   <VCard no-padding>
     <VCardTitle class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">LISTE DES ETUDIANTS
@@ -185,22 +226,17 @@ onMounted(() => {
       <VCardText>
         <div class="demo-space-x d-flex justify-space-between">
           <VCol cols="12" md="5">
-            <VTextField density="comfortable" label="Recherche Multicritère" variant="filled"
-              prepend-inner-icon="tabler-search" v-model="search"
-              placeholder="Recherchez par cni, matricule, status..." />
+            <VTextField density="comfortable" label="Recherche Multicritère" variant="filled" prepend-inner-icon="tabler-search" v-model="search" placeholder="Recherchez par nom complet, filière, email." />
           </VCol>
 
           <div>
-            <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter"
-              @click="exportToExcell" />
-            <VBtn variant="flat" color="primary" @click="addVerification">
+            <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter" @click="exportToExcell" />
+            <VBtn variant="flat" color="primary" @click="isAjoutEtudiantDialogVisible=true">
               <v-icon icon="tabler-new-section" size="20" start> </v-icon>Nouvelle étudiant
             </VBtn>
           </div>
         </div>
       </VCardText>
-
-
 
       <div v-if="!listeStudents" class="text-center">
         <VProgressLinear color="primary" indeterminate height="2" />
@@ -208,75 +244,56 @@ onMounted(() => {
       <!-- 👉 Data Table  -->
       <div v-else>
         <div v-if="listeStudents.length > 0">
-          <VDataTable :loading="loading"  :headers="headers" :items="studentsList" :search="search"
-            v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
-
-           
+          <VDataTable :loading="loading" :headers="headers" :items="studentsList" :search="search" v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
 
             <template #loading>
-                <VSkeletonLoader v-for="i in 10" :key="i" type="table-row-divider" />
- 
+              <VSkeletonLoader v-for="i in 10" :key="i" type="table-row-divider" />
+
             </template>
 
             <template #item.nom_prenom="{ item }">
               <div class="d-flex align-center gap-x-3">
-                <VAvatar variant="tonal" color="secondary" size="40">{{ getAvatarText(item.lastName, item.firstName) }}
+                <VAvatar variant="outlined" color="primary" size="40">{{ getAvatarText(item.lastName, item.firstName) }}
                 </VAvatar>
-                <span>{{ item.lastName }} {{ item.firstName }}</span>
+                <span>{{ item.lastName.toUpperCase() }} {{ item.firstName.toUpperCase() }}</span>
               </div>
             </template>
 
-            <!-- <template #item.date_naissance="{ item }">
-              <span>{{ getDateNaissance(item?.date_naissance) }}</span>
-            </template> -->
+          
 
-            <!-- <template #item.status="{ item }">
-              <VChip size="small" :color="resolveStatus(item.status)?.color">
-                <VIcon size="x-small" start :icon="resolveStatus(item.status)?.icon" /> 
-                <b class="text-uppercase"> {{ resolveStatus(item.status)?.text }}</b>
+            <template #item.programId="{ item }">
+              <VChip size="small" :color="resolveProgramId(item.programId)?.color">
+                <b class="text-uppercase"> {{ resolveProgramId(item.programId)?.text }}</b>
               </VChip>
-            </template> -->
-<!-- 
-            <template #item.id_verification="{ item }">
-              <VChip size="small" :color="resolveStatusVerification(item.id_verification)?.color">
-                <VIcon size="x-small" start :icon="resolveStatusVerification(item.id_verification)?.icon" />
-                <b class="text-uppercase"> {{ resolveStatusVerification(item.id_verification)?.text }}</b>
-              </VChip>
-            </template> -->
+            </template>
+           
 
             <!-- ACTIONS -->
             <template #item.actions="{ item }">
-               <RouterLink
-               
-                  :to="{ name: 'students-view-code', params: { code: item.code } }"
-                  class="font-weight-medium me-2"
-                  style="line-height: 1.375rem;"
-                >
-                <VIcon color="secondary" icon="tabler-eye" />
-                </RouterLink>
-             
-             <!-- <IconBtn @click="editItem(item)">
-                <VIcon color="primary" icon="tabler-edit" />
+
+              <RouterLink :to="{ name: 'students-view-code', params: { code: item.code } }" class="font-weight-medium " style="line-height: 1.375rem;">
+
+                <IconBtn>
+                  <VIcon color="secondary" icon="tabler-eye" />
+                </IconBtn>
+
+              </RouterLink>
+              <IconBtn  @click="editerStudent(item)">
+                <VIcon  color="primary" icon="tabler-edit" />
               </IconBtn>
--->              <!-- <IconBtn @click="deleteItem(item.cni)">
-            <VIcon color="error" icon="tabler-trash" />
-          </IconBtn> -->
+              <IconBtn @click="deleteStudent(item.code)">
+               <VIcon color="error" icon="tabler-trash" />
+          </IconBtn>
             </template>
-
-
 
             <!-- pagination -->
 
             <template #bottom>
               <VCardText v-if="listeStudents" class="pt-2">
                 <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
-                  <VSelect v-model="options.itemsPerPage" :items="paginationItems"
-                    style="max-inline-size: 8rem;min-inline-size: 5rem;  font-size: 95px;" label="Lignes par page :"
-                    variant="filled" @update:model-value="handleChange" />
+                  <VSelect v-model="options.itemsPerPage" :items="paginationItems" style="max-inline-size: 8rem;min-inline-size: 5rem;  font-size: 95px;" label="Lignes par page :" variant="filled" @update:model-value="handleChange" />
 
-                  <VPagination v-model="options.page" :total-visible="$vuetify.display.smAndDown ? 3 : 4"
-                    :length="Math.ceil(listeStudents.length / options.itemsPerPage)" rounded="circle"
-                    active-color="primary" />
+                  <VPagination v-model="options.page" :total-visible="$vuetify.display.smAndDown ? 3 : 4" :length="Math.ceil(listeStudents.length / options.itemsPerPage)" rounded="circle" active-color="primary" />
                 </div>
               </VCardText>
             </template>
@@ -290,14 +307,13 @@ onMounted(() => {
     </div>
   </VCard>
 
+  <ModalAjouteEtudiant v-model:is-dialog-visible="isAjoutEtudiantDialogVisible" @add-etudiant="addEtudiant" />
+ 
 
-  <!-- <EditDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoEditDialogVisible"/>
- -->
+  <EditStudentDrawer :edit-student="editStudent" v-model:isDrawerOpen="isEditStudentDialogVisible"
+    @on-update="updateStudent" />
 
-  <!-- <ViewDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoViewDialogVisible" />
-
-  <EditDialogDrawer :carte-data="carteData" v-model:isDrawerOpen="isCarteInfoEditDialogVisible"
-    @on-update="updateCarte" /> -->
+  <DeleteConfirmation v-model:is-dialog-visible="isDeleteDialogVisible"  confirmation-msg="Vouler vous vraiment supprimer l'Etudiant ? " title="SUPPRESSION"/>
 
 </template>
 
@@ -307,15 +323,15 @@ onMounted(() => {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
-.v-table>.v-table__wrapper>table>tbody>tr>th,
-.v-table>.v-table__wrapper>table>thead>tr>th,
-.v-table>.v-table__wrapper>table>tfoot>tr>th {
+.v-table > .v-table__wrapper > table > tbody > tr > th,
+.v-table > .v-table__wrapper > table > thead > tr > th,
+.v-table > .v-table__wrapper > table > tfoot > tr > th {
   font-weight: bolder !important;
   letter-spacing: 1.5px;
   // font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.v-table>.v-table__wrapper>table>tbody>tr>td {
+.v-table > .v-table__wrapper > table > tbody > tr > td {
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }

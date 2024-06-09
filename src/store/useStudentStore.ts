@@ -1,4 +1,5 @@
 import { Payment, Student } from "@/@core/types";
+import axios from "axios";
 
 export const useStudentStore = defineStore('Student', () => {
     const isLoading = ref(false)
@@ -25,6 +26,29 @@ export const useStudentStore = defineStore('Student', () => {
       }
 
 
+      async function fetchOne(code:string){
+        return  await useApi('/student/'+code)
+      }
 
-    return {listeStudents, listeStudentPayments, isLoading, fetchAll,fetchStudentPayments}
+      async function addPayment(payment){
+        
+          const {data} = await useApi('/payments/new').post({...payment})         
+
+          console.log(data.value);
+          
+      }
+
+      async function getPdfFile(idPayment:string){
+         return  axios.get(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/paymentFile/${idPayment}`,{
+         responseType :'blob'})
+         
+      }
+
+        async function updateOne(payload:Student){        
+           await axios.put(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/edit`,payload)     
+      }
+
+
+
+    return {listeStudents, listeStudentPayments, isLoading,fetchOne ,getPdfFile, fetchAll,fetchStudentPayments,updateOne,addPayment}
   })

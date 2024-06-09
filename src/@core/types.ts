@@ -62,7 +62,7 @@ export interface Options {
 
 
 export enum ProgramId{
-  ISI,GI,MF,IIR
+  ISI='ISI',GI='GI',MF='MF',IIR='IIR'
 }
 export enum PaymentType{
     CASH="CASH",
@@ -71,27 +71,27 @@ export enum PaymentType{
     DEPOSIT="DEPOSIT"
 }
 export enum PaymentStatus{
-    CREATED,
-    VALIDATED,
-    REJECTED
+    CREATED="CREATED",
+    VALIDATED="VALIDATED",
+    REJECTED="REJECTED"
 }
 export interface Student {
-  id:number
-  firstName:string
-  lastName:string
-  email:string
-  code:string
+  id?:number | null
+  firstName:string | null
+  lastName:string | null
+  email:string | null
+  code:string | null
   programId :ProgramId
 }
 
 //👉 - pdfUrl ===> in the backend (receipt) 
 export interface Payment {
-  id:number
-  date:Date
-  amount:number
-  type:PaymentType
-  status:PaymentStatus
-  pdfUrl :string
+  id?:number
+  date:Date | null
+  amount:number | null
+  type:PaymentType 
+  status:PaymentStatus 
+  pdfUrl :string | null
 }
 
 
