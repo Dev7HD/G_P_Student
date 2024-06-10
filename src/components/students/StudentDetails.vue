@@ -13,7 +13,7 @@ const props = defineProps<Props>()
 </script>
 
 <template>
-  <VCard>
+  <VCard class='mt-5'>
         <VCardItem>
           <VCardTitle class="text-body-1">
           Filière :    <span class="font-weight-bold text-h5">{{ props.student.programId }} </span>

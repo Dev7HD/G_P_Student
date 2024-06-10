@@ -4,13 +4,13 @@ import { breakpointsVuetify } from '@vueuse/core'
 import { VIcon } from 'vuetify/components/VIcon'
 
 // ❗ Logo SVG must be imported with ?raw suffix
-import logo from '@images/secure-payment-svgrepo-com.png'
+import logo from '@images/my-website-logo.png'
 
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layouts/enums'
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: 'E-Paiements',
+    title: 'G P E',
     logo: h('img', { src: logo, style: 'width:40px; height:40px' }),
     contentWidth: ContentWidth.Fluid,
     contentLayoutNav: AppContentLayoutNav.Vertical,

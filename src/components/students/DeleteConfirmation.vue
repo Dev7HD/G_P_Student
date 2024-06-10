@@ -3,11 +3,12 @@ interface Props {
   confirmationQuestion: string
   isDialogVisible: boolean
   title:string
+  codeDelete:string
 }
 
 interface Emit {
   (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'confirm', value: boolean): void
+  (e: 'confirm', value: string): void
 }
 
 const props = defineProps<Props>()
@@ -19,7 +20,7 @@ const updateModelValue = (val: boolean) => {
 }
 
 const onConfirmation = () => {
-  emit('confirm', true)
+  emit('confirm', props.codeDelete)
   updateModelValue(false)
 }
 
@@ -35,7 +36,7 @@ const onConfirmation = () => {
   >
       <DialogCloseBtn @click="updateModelValue(false)" />
    <VCard class="text-center ">
-     <VCol class="d-flex justify-center align-center">
+     <VCol class="d-flex justify-center flex-column align-center">
        <VIcon
           icon="tabler-alert-triangle"
           variant="outlined"
@@ -43,7 +44,7 @@ const onConfirmation = () => {
           
           style=" block-size: 88px;inline-size: 88px; pointer-events: none;"
         >
-          <span class="text-5xl"></span>
+          
         </VIcon>
        <v-card-title class="text-h2 mt-5">
         {{props.title}}
@@ -56,7 +57,7 @@ const onConfirmation = () => {
           {{ props.confirmationQuestion }}
         </VCardText>
 
-      <VCardText class="d-flex align-center justify-center gap-4 mt-4">
+      <VCardText class="d-flex align-center justify-center  gap-4 mt-4">
         <VBtn
           size="small"
           color="success"
@@ -70,7 +71,7 @@ const onConfirmation = () => {
         <VBtn
          size="small"
           color="error"
-          variant="tonal"
+          variant="outlined"
           @click="updateModelValue(false)"
           append-icon="tabler-ban"
         >

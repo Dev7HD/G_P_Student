@@ -15,7 +15,7 @@ const route = useRoute()
 //👉 - Instance of our Store
 const store = useStudentStore()
 const { listeStudents, isLoading } = storeToRefs(store)
-const { fetchAll,updateOne } = store
+const { fetchAll,updateOne,deleteOne } = store
 
 
 
@@ -66,13 +66,31 @@ const editerStudent = (item)=>{
   isEditStudentDialogVisible.value = true
 }
 
+const codeDelete = ref('')
+const deleteStudentModal = (code:string)=>{
+  codeDelete.value = code
+  isDeleteDialogVisible.value = true
+}
 
-
+const deleteStudent = (code:string)=>{
+  deleteOne(code).then(()=>{
+    fetchAll().then((res) => {
+      setTimeout(() => {
+        GetData()
+        loading.value = false
+      }, 1000)
+    })
+  }).then(()=>{
+      toast.warning("Your Student is DELETED !", {
+        autoClose: 2000,position:"top-center"
+      }); 
+  })
+}
 
 const updateStudent = (editStudent)=>{
   updateOne(editStudent).then(()=>{
     
-      toast.success("Your Student is Updated !", {
+      toast.info("Your Student is Updated !", {
         autoClose: 1000,position:"top-center"
       }); 
   })
@@ -80,13 +98,7 @@ const updateStudent = (editStudent)=>{
 
 // SECTION METHODES
 //👉 - Methode for deleting an Item 
-const deleteItem = (itemId: number) => {
-  if (!props.verificationsList)
-    return
 
-  console.log(itemId);
-
-}
 
 //👉 - Methode for Resolving a Status
 const resolveStatus = (status: string) => {
@@ -281,7 +293,7 @@ onMounted(() => {
               <IconBtn  @click="editerStudent(item)">
                 <VIcon  color="primary" icon="tabler-edit" />
               </IconBtn>
-              <IconBtn @click="deleteStudent(item.code)">
+              <IconBtn @click="deleteStudentModal(item.code)">
                <VIcon color="error" icon="tabler-trash" />
           </IconBtn>
             </template>
@@ -313,7 +325,7 @@ onMounted(() => {
   <EditStudentDrawer :edit-student="editStudent" v-model:isDrawerOpen="isEditStudentDialogVisible"
     @on-update="updateStudent" />
 
-  <DeleteConfirmation v-model:is-dialog-visible="isDeleteDialogVisible"  confirmation-msg="Vouler vous vraiment supprimer l'Etudiant ? " title="SUPPRESSION"/>
+  <DeleteConfirmation :code-delete="codeDelete" v-model:is-dialog-visible="isDeleteDialogVisible"  confirmation-question="Vouler vous vraiment supprimer l'Etudiant ? " title="SUPPRESSION" @confirm="deleteStudent"/>
 
 </template>
 

@@ -1,9 +1,9 @@
 export default [
-  // {
-  //   title: 'Home',
-  //   to: { name: 'root' },
-  //   icon: { icon: 'tabler-users' },
-  // },
+  {
+    title: 'Home',
+    to: { name: 'root' },
+    icon: { icon: 'tabler-home' },
+  },
   
   {
     title: 'Paiements',

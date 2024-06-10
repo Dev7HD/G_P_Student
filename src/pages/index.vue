@@ -155,9 +155,9 @@ onMounted(() => {
 }
 </style> --> 
 <script setup lang="ts">
-// import type { SalesDetails } from '@db/pages/datatable/types';
+import type { SalesDetails } from '@db/pages/datatable/types';
 
-// const { data: productList, error } = await useApi<SalesDetails[]>('pages/datatable')
+const { data: productList, error } = await useApi<SalesDetails[]>('pages/datatable')
  const { data,isFetching,error } = await useApi('http://localhost:9099/students/all')
 const search = ref('')
 

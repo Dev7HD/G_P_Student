@@ -48,7 +48,9 @@ export const useStudentStore = defineStore('Student', () => {
            await axios.put(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/edit`,payload)     
       }
 
+        async function deleteOne(code:string){
+          await axios.delete(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/delete/${code}`)
+        }
 
-
-    return {listeStudents, listeStudentPayments, isLoading,fetchOne ,getPdfFile, fetchAll,fetchStudentPayments,updateOne,addPayment}
+    return {listeStudents, listeStudentPayments, isLoading,fetchOne,deleteOne ,getPdfFile, fetchAll,fetchStudentPayments,updateOne,addPayment}
   })

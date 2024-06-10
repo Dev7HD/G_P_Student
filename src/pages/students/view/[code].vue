@@ -207,7 +207,7 @@ onMounted(() => {
 <template>
 
   <VCard no-padding>
-    <VCardTitle  class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">Données de l' Etudiant code : <span>
+    <VCardTitle  class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">Données de l' Etudiant : <span>
       <VAvatar
           size="34"
           icon="tabler-user"
@@ -273,7 +273,7 @@ onMounted(() => {
             <template #item.receipt="{item}">
                 <VBtn
                   variant="outlined"
-                  color="secondary"
+                  color="info"
                   prepend-icon="tabler-stereo-glasses"
                   size="small"
                   @click="showPdf(item)"
