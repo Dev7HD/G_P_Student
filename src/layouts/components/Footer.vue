@@ -1,14 +1,16 @@
 <template>
   <div class="h-100 d-flex align-center justify-md-space-between justify-center">
     <!-- 👉 Footer: left content -->
-    <span class="d-flex align-center font-weight-bold">
+    <span class="d-flex align-center text-medium-emphasis">
       &copy;
-      <a
-        href="#"
+      {{ new Date().getFullYear() }}
+      Réalisé par <span
+        href=""
         rel="noopener noreferrer"
-        class="text-primary font-weight-black ms-1"
-      >SUPMTI</a>
+        class="text-primary font-weight-bold ms-1"
+      >BISSI OUSSAMA <span class="font-weight-light">et</span> HASSANI ASMAE</span>
     </span>
+
    
   </div>
 </template>

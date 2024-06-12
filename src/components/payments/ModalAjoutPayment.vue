@@ -117,6 +117,7 @@ const addPayment = ()=>{
              <VFileInput
               v-model="file"
               @change="selectFile"
+              accept="application/pdf"
               color="primary"
               label="File input"
               variant="outlined"

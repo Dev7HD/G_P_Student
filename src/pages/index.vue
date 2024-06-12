@@ -1,312 +1,213 @@
-<!-- <template>
-
- <DataProvider #="{data,loading}">
-   <VCard class="mb-6 w-100 sticky-header overflow-hidden rounded-t" title="Kick start your project 🚀">
-    <div class="d-flex align-center gap-4 flex-wrap bg-background pa-6">
-      <div  v-if="!loading">
-        <div v-if="data">
-          <div v-if="data.length>0">
-            {{ data }}
-          </div>
-          <div v-else>No data found here</div> 
-        </div>
-        <div v-else>
-          Something went wrong 
-        </div>
-      </div>
-      <div v-else>
-        Loading .......
-      </div>
-    </div>
-  </VCard>
- </DataProvider>
-
-</template>
-
-<script setup lang="ts">
-import axios from 'axios';
-
-const options = {
-  method: 'GET',
-  url: 'https://weatherapi-com.p.rapidapi.com/current.json',
-  params: {q: '53.1,-0.13'},
-  headers: {
-    'X-RapidAPI-Key': '6b4620f8c8msh7ea7c0ce6ec5fddp1cd442jsnf2097493c24c',
-    'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-  }
-};
-
-try {
-	const response = await axios.request(options);
-	console.log(response.data);
-} catch (error) {
-	console.error(error);
-}
-
-const res = await $api('', {
-      method: 'GET',
-      headers:{
-         'X-RapidAPI-Key': '6b4620f8c8msh7ea7c0ce6ec5fddp1cd442jsnf2097493c24c',
-         'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com'
-      },
-      params: {q: '53.1,-0.13'},
-      onResponseError({ response }) {
-        console.log(response);
-        
-      }
-    })
-    console.log(res);
-const isLoading = ref(false)
-
-
-
-
-
-
-const fetchResults = async () => {
-  isLoading.value = true
-
-  const { data } = await useApi('http://localhost:9099/students/all')
-  console.log(data.value);
-
-
-   
-
-  // ℹ️ simulate loading: we have used setTimeout for better user experience your can remove it
-  setTimeout(() => {
-    isLoading.value = false
-  }, 500)
-}
-fetchResults()
-// watch(searchQuery, fetchResults)
-
-
-
-
-
-</script>
-<!-- <script setup lang="ts">
-import axios from 'axios';
-const loading = ref(false)
-const data = ref(null)
-
-const fetchData = async () => {
-     loading.value = true
-    try {
-      const res = await axios.get('https://jsonplaceholder.typicode.com/posts')
-      data.value=res.data
-    } catch (error) {
-      console.log(error);
-      
-    }
-     loading.value = false
-}
-onMounted(() => {
-  fetchData()
-})
-
-// console.log(0);
-
-// Promise.resolve().then(()=>console.log(1))
-// setTimeout(() => {
-//   console.log(2);
-// }, 0);
-// queueMicrotask(()=>{
-//   console.log(3);
-//   queueMicrotask(()=>console.log(4)
-//   )
-// })
-// console.log(5);
-</script> -->
-
-<!-- <style lang="scss">
-.sticky-header {
-  position: sticky;
-  z-index: -8;
-  transition: all 0.3s ease-in-out;
-}
-
-.layout-nav-type-vertical {
-  &.layout-navbar-sticky {
-    .sticky-header {
-      inset-block: 4rem 0;
-    }
-  }
-
-  &.layout-navbar-static {
-    .sticky-header {
-      inset-block: 0 0;
-    }
-  }
-}
-
-.layout-nav-type-horizontal {
-  &.layout-navbar-static {
-    .sticky-header {
-      inset-block: 0 0;
-    }
-  }
-
-  &.layout-navbar-sticky {
-    .sticky-header {
-      inset-block: 8.1rem 0;
-    }
-  }
-}
-</style> --> 
-<script setup lang="ts">
-import type { SalesDetails } from '@db/pages/datatable/types';
-
-const { data: productList, error } = await useApi<SalesDetails[]>('pages/datatable')
- const { data,isFetching,error } = await useApi('http://localhost:9099/students/all')
-const search = ref('')
-
-// headers
-const headers = [
-  { title: 'prénom', key: 'firstName' },
-  { title: 'nom', key: 'lastName' },
-  { title: 'email', key: 'email' },
-  { title: 'Programme', key: 'programId' },
-  { title: 'code', key: 'code' },
-  // { title: 'STATUS', key: 'status' },
-  { title: 'view', key: 'hamza', sortable: false },
-]
-
-// 👉 methods
-const deleteItem = (itemId: number) => {
-  if (!productList.value)
-    return
-
-  const index = productList.value.findIndex(item => item.product.id === itemId)
-
-  productList.value.splice(index, 1)
-}
-
-const categoryIcons = [
-  { name: 'Mouse', icon: 'tabler-mouse', color: 'warning' },
-  { name: 'Glass', icon: 'tabler-eyeglass', color: 'primary' },
-  { name: 'Smart Watch', icon: 'tabler-device-watch', color: 'success' },
-  { name: 'Bag', icon: 'tabler-briefcase', color: 'info' },
-  { name: 'Storage Device', icon: 'tabler-device-audio-tape', color: 'warning' },
-  { name: 'Bluetooth', icon: 'tabler-bluetooth', color: 'error' },
-  { name: 'Gaming', icon: 'tabler-device-gamepad-2', color: 'warning' },
-  { name: 'Home', icon: 'tabler-home', color: 'error' },
-  { name: 'VR', icon: 'tabler-badge-vr', color: 'primary' },
-  { name: 'Shoes', icon: 'tabler-shoe', color: 'success' },
-  { name: 'Electronics', icon: 'tabler-cpu', color: 'info' },
-  { name: 'Projector', icon: 'tabler-theater', color: 'warning' },
-  { name: 'iPod', icon: 'tabler-device-airpods', color: 'error' },
-  { name: 'Keyboard', icon: 'tabler-keyboard', color: 'primary' },
-  { name: 'Smart Phone', icon: 'tabler-device-mobile', color: 'success' },
-  { name: 'Smart TV', icon: 'tabler-device-tv', color: 'info' },
-  { name: 'Google Home', icon: 'tabler-brand-google', color: 'warning' },
-  { name: 'Mac', icon: 'tabler-brand-apple', color: 'error' },
-  { name: 'Headphone', icon: 'tabler-headphones', color: 'primary' },
-  { name: 'iMac', icon: 'tabler-device-imac', color: 'success' },
-  { name: 'iPhone', icon: 'tabler-brand-apple', color: 'warning' },
-]
-
-const resolveStatusColor = (status: string) => {
-  if (status === 'Confirmed')
-    return 'primary'
-  if (status === 'Completed')
-    return 'success'
-  if (status === 'Cancelled')
-    return 'error'
-}
-const options = ref({ page: 1, itemsPerPage: 5, sortBy: [''], sortDesc: [false] })
-
-const categoryIconFilter = (categoryName: string): {
-  icon: string
-  color: string }[] => {
-  const index = categoryIcons.findIndex(category => category.name === categoryName)
-
-  if (index !== -1)
-    return [{ icon: categoryIcons[index].icon, color: categoryIcons[index].color }]
-
-  return [{ icon: 'tabler-help-circle', color: 'primary' }]
-}
-
-if (error.value)
-  console.error(error.value)
-</script>
-
 <template>
-  <VCard>
-    <v-card-text class="text-h4 m-5">
-      Liste des Students
-    </v-card-text>
-    <VCardText>
-      <VRow>
-        <VCol
-          cols="12"
-          offset-md="8"
-          md="4"
+<VCard class="mb-6">
+      <VCardText class="py-12 position-relative">
+        <div
+          class="d-flex flex-column gap-y-4 mx-auto"
+          :class="$vuetify.display.mdAndUp ? 'w-100' : $vuetify.display.xs ? 'w-50' : 'w-75'"
         >
-          <AppTextField
-            v-model="search"
-            placeholder="Search ..."
-            append-inner-icon="tabler-search"
-            single-line
-            hide-details
-            dense
-            outlined
-          />
-        </VCol>
-      </VRow>
-    </VCardText>
-
-    <!-- 👉 Data Table  -->
-    <VDataTable
-      :headers="headers"
-      :items="data || []"
-      :search="search"
-     :items-per-page="options.itemsPerPage"
-    :page="options.page"
-    :options="options"
-      class="text-no-wrap"
-    >
-      <template #bottom>
-      <VCardText class="pt-2">
-        <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
-          <VTextField
-            v-model="options.itemsPerPage"
-            label="Rows per page:"
-            type="number"
-            min="-1"
-            max="15"
-            hide-details
-            variant="underlined"
-            style="max-inline-size: 8rem;min-inline-size: 5rem;"
-          />
-
-          <VPagination
-            v-model="options.page"
-            :total-visible="$vuetify.display.smAndDown ? 3 : 5"
-            :length="Math.ceil(data.length / options.itemsPerPage)"
-          />
+          <h4
+            class="text-h4 text-center text-uppercase text-wrap mx-auto"
+            
+          >
+          Bienvenue sur notre application de <span class="text-decoration-underline text-primary text-no-wrap">gestion des paiements des étudiants.</span>
+          </h4>
+          <p class="text-center text-wrap text-body-1 mx-auto mb-0">
+            Facilitez vos paiements avec notre application . </p>
         </div>
+        <img
+          :src="academyCourseIllustration2"
+          class="illustration1 d-none d-md-block"
+          height="180"
+        >
+        <img
+          :src="academyCourseIllustration1"
+          class="illustration2 d-none d-md-block"
+          height="180"
+        >
       </VCardText>
-    </template>
+</VCard>
 
-      <!-- Delete -->
-      <template #item.hamza="{ item }">
-        <IconBtn @click="console.log(item.firstName)">
-          <VIcon icon="tabler-eye" color="primary" />
-        </IconBtn>
-      </template>
-    </VDataTable>
-  </VCard>
+
+  <VRow id=" match-height">
+    <VCol cols="12" md="6">
+      <VCard
+        title="Statut des Paiements"
+        subtitle="Statistiques des paiements classés par statut."
+      >
+        <VCardText>
+          <PolarAreaChart
+          v-if="dataSetsByStatus"
+          :chart-options="chartConfig"
+          :height="400"
+          :chart-data="dataSetsByStatus"
+           />      
+            </VCardText>
+      </VCard>
+    </VCol>
+    <!-- 👉 Statistics Line Chart  -->
+    <VCol cols="12" md="6">
+      <VCard
+         title="Date des Paiements"
+        subtitle="Statistiques des paiements classés par date."
+      >
+      
+        <VCardText>
+          <BarChart
+            v-if="dataSets"
+            :chart-options="chartConfigBar"
+            :height="400"
+            :chart-data="dataSets"
+           />      
+            </VCardText>
+      </VCard>
+    </VCol>
+   
+  </VRow>
+
 </template>
-<style lang="scss">
-.v-table th .v-data-table-header__content {
-  font-size:1.2em;
 
-font-weight: bolder;
+
+<style lang="scss">
+
+.illustration1 {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
 }
 
-
-.v-table > .v-table__wrapper > table > tbody > tr > td{
-  font-size:12px
+.illustration2 {
+  position: absolute;
+  inset-block-start: 2rem;
+  inset-inline-start: 2.5rem;
 }
 </style>
+
+
+
+
+
+<script setup lang="ts">
+import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
+import { getLatestBarChartConfig, getPolarChartConfig } from '@core/libs/chartjs/chartjsConfig'
+import BarChart from '@core/libs/chartjs/components/BarChart'
+import PolarAreaChart from '@core/libs/chartjs/components/PolarAreaChart'
+import academyCourseIllustration2 from '@images/illustrations/classic-pack-payment-methods.png'
+import academyCourseIllustration1 from '@images/illustrations/payment-elements-background.png'
+import axios from 'axios'
+
+import { useTheme } from 'vuetify'
+interface PaymentData {
+  date: string;
+  amount: number;
+}
+
+
+const colors: ChartJsCustomColors = {
+  white: '#fff',
+  yellow: '#ffe802',
+  primary: '#2C4962',
+  error:'#F25C69'  ,
+  success:'#59D938'  ,
+  areaChartBlue: '#2c9aff',
+  barChartYellow: '#ffcf5c',
+  polarChartGrey: '#4f5d70',
+  polarChartInfo: '#299aff',
+  lineChartYellow: '#d4e157',
+  polarChartGreen: '#28dac6',
+  lineChartPrimary: '#9e69fd',
+  lineChartWarning: '#ff9800',
+  horizontalBarInfo: '#26c6da',
+  polarChartWarning: '#ff8131',
+  scatterChartGreen: '#28c76f',
+  warningShade: '#ffbd1f',
+  areaChartBlueLight: '#84d0ff',
+  areaChartGreyLight: '#edf1f4',
+  scatterChartWarning: '#ff9f43',
+}
+
+const vuetifyTheme = useTheme()
+
+// Function to fetch payment data from API
+async function fetchPaymentData(): Promise<PaymentData[]> {
+  try {
+    const response = await axios.get(import.meta.env.VITE_SPRING_BOOT_API_URL+'/payments/all') // Replace with your API endpoint
+    return response.data
+  } catch (error) {
+    console.error('Error fetching payment data:', error)
+    return []
+  }
+}
+
+// Function to process payment data and aggregate totals by date
+async function processData(): Promise<any> {
+  const paymentData = await fetchPaymentData()
+  const aggregatedData = paymentData.reduce((acc, curr) => {
+    
+    // Assuming date is in ISO format, extract date
+    let IsoDate = new Date(curr.date)
+    const date = IsoDate.toISOString().split('T')[0] // Extract date portion if date is in ISO format
+    if (!acc[date]) {
+      acc[date] = 0
+    }
+    acc[date] += curr.amount
+    return acc
+  }, {})
+  const sortedDates = Object.keys(aggregatedData).sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+
+  return {
+    labels: Object.keys(aggregatedData),
+    datasets: [
+    {
+      maxBarThickness: 20,
+      backgroundColor: colors.primary,
+      borderColor: 'transparent',
+      borderRadius: { topRight: 15, topLeft: 15 },
+      data: sortedDates.map(date => aggregatedData[date]),
+    },
+  ]
+  }
+}
+
+async function processDataByStatus(): Promise<any> {
+  const paymentData = await fetchPaymentData()
+  const aggregatedData = paymentData.reduce((acc, curr) => {
+    const status = curr.status
+    if (!acc[status]) {
+      acc[status] = 0
+    }
+    acc[status] += 1
+    return acc
+  }, {})
+
+  return {
+    labels: Object.keys(aggregatedData),
+    datasets: [
+      {
+        borderWidth: 0,
+        label: 'Total Payments by Status',
+        data: Object.values(aggregatedData),
+        backgroundColor: [
+          colors.error,
+          colors.success,
+          colors.primary
+        ],
+      },
+    ],
+  }
+}
+
+const dataSets = ref(null)
+const dataSetsByStatus = ref(null)
+
+onMounted(()=>{
+  processData().then(res=>{
+    dataSets.value = res
+})
+processDataByStatus().then(res=>{
+    dataSetsByStatus.value = res
+})
+})
+const chartConfig = computed(() => getPolarChartConfig(vuetifyTheme.current.value))
+const chartConfigBar = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))
+</script>
+
