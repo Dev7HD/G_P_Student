@@ -1,5 +1,39 @@
 <script setup lang="ts">
+import user1 from '@images/user.jpg';
+
+const router = useRouter()
+
+// TODO: Get type from backend
+const user = useCookie<any>('user')
+
+const logout = async () => {
+  // Remove "accessToken" from cookie
+  useCookie('token').value = null
+
+  // Remove "userData" from cookie
+  user.value = useCookie("user").value
+
+  // Redirect to login page
+  await router.push('/login')
+
+  // ℹ️ We had to remove abilities in then block because if we don't nav menu items mutation is visible while redirecting user to login page
+  // Remove "userAbilities" from cookie
+  useCookie('user').value = null
+
+  
+}
+
+const userProfileList = [
+  { type: 'divider' },
+  { type: 'navItem', icon: 'tabler-user', title: 'Profile', to: { name: 'apps-user-view-id', params: { id: 21 } } },
+  { type: 'navItem', icon: 'tabler-settings', title: 'Settings', to: { name: 'pages-account-settings-tab', params: { tab: 'account' } } },
+  { type: 'navItem', icon: 'tabler-file-dollar', title: 'Billing Plan', to: { name: 'pages-account-settings-tab', params: { tab: 'billing-plans' } }, badgeProps: { color: 'error', content: '4' } },
+  { type: 'divider' },
+  { type: 'navItem', icon: 'tabler-currency-dollar', title: 'Pricing', to: { name: 'pages-pricing' } },
+  { type: 'navItem', icon: 'tabler-question-mark', title: 'FAQ', to: { name: 'pages-faq' } },
+]
 </script>
+
 
 <template>
   <VBadge
@@ -14,13 +48,8 @@
       class="cursor-pointer"
       color="primary"
       variant="tonal"
-      icon="tabler"
     >
-            <VIcon
-                class="me-2"
-                icon="tabler-user"
-                size="22"
-              />
+      <VImg :src="user1"/>
 
       <!-- SECTION Menu -->
       <VMenu
@@ -30,10 +59,32 @@
         offset="14px"
       >
         <VList>
-        
+          <!-- 👉 User Avatar & Name -->
+          <VListItem>
+            <template #prepend>
+              <VListItemAction start>
+                <VBadge
+                  dot
+                  location="bottom right"
+                  offset-x="3"
+                  offset-y="3"
+                  color="success"
+                >
+                  <VAvatar
+                    color="primary"
+                    variant="outlined"
+                  >
+                  <VImg :src="user1"/>
+                  </VAvatar>
+                </VBadge>
+              </VListItemAction>
+            </template>
 
-          <!-- Divider -->
-          <VDivider class="my-2" />
+            <VListItemTitle class="font-weight-bold text-uppercqse">
+              {{user ? user : "not Found"}}
+            </VListItemTitle>
+            <VListItemSubtitle>{{user ? "Admin" : "User"}}</VListItemSubtitle>
+          </VListItem>
 
           <!-- 👉 Logout -->
           <VListItem to="/login">
@@ -45,7 +96,10 @@
               />
             </template>
 
-            <VListItemTitle>Logout</VListItemTitle>
+            <VListItemTitle  @click="logout">
+              
+                Logout
+            </VListItemTitle>
           </VListItem>
         </VList>
       </VMenu>
