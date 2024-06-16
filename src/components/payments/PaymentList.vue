@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Payment, Student } from "@/@core/types";
-// import EditDialog from "@/components/Verifications/Dialogs/EditDialog.vue";
 import { usePaymentStore } from '@/store/usePaymentStore';
 import dayjs from 'dayjs';
 import { toast } from 'vue3-toastify';
@@ -8,7 +7,7 @@ import 'vue3-toastify/dist/index.css';
 import * as XLSX from 'xlsx';
 
 //👉 - Variables
-// const props = defineProps(['verificationsList', 'isLoading'])
+
 const search = ref('')
 
 //👉 - Instance of our Store
@@ -51,7 +50,7 @@ const orderBy = ref()
 const headers = [
   { title: 'Nom Complet', key: 'nom_prenom' },
   { title: 'Date Payment', key: 'date' },
-  { title: 'Amount', key: 'amount' },
+  { title: 'montant', key: 'amount' },
   { title: 'Statut', key: 'status' },
   { title: 'type', key: 'type' },
   { title: 'actions', key: 'actions' },
@@ -59,11 +58,11 @@ const headers = [
 //👉 - Methode for Resolving a Status
 const resolveStatus = (status: string) => {
   if (status === 'CREATED')
-    return { text: 'Created', color: 'primary', icon: 'tabler-check' }
+    return { text: 'Créé', color: 'primary', icon: 'tabler-check' }
   else if (status === 'VALIDATED')
-    return { text: 'Validated', color: 'success', icon: 'tabler-checks' }
+    return { text: 'Valide', color: 'success', icon: 'tabler-checks' }
   else if (status === 'REJECTED')
-    return { text: 'Rejected', color: 'error', icon: 'tabler-ban' }
+    return { text: 'Rejeté', color: 'error', icon: 'tabler-ban' }
   return { text: 'Pending', color: 'warning', icon: 'tabler-dots' }
 }
 
@@ -94,11 +93,7 @@ const editStatus = (item) => {
   isEditStatusDialogVisible.value = true
 }
 
-//👉 - Methode for showing an item
-const showItem = (item: Carte) => {
-  carteData.value = item
-  isCarteInfoViewDialogVisible.value = true
-}
+
 //👉 - Methode for handling format of the date naissance 
 const getDateNaissance = (date: Date) => {
   const customFormatDate = dayjs(date).format('YYYY - MM - DD');
@@ -111,11 +106,6 @@ const getAvatarText = (prenom: string, nom: string) => {
   const nomInitial = nom.charAt(0);
   const initials = (prenomInitial + nomInitial).toUpperCase();
   return initials;
-}
-
-//👉 - Methode for handling onUpdate carte Event
-const updateCarte = (item: Carte) => {
-  carteData.value = item
 }
 
 
@@ -134,11 +124,6 @@ const exportToExcell = () => {
   XLSX.writeFile(workbook, 'liste_globale_payments.xlsx');
 }
 
-
-// const isLoaded = computed(() => listePayments.value.length === 0)
-// const isLoaded = ref(listePayments.value)
-
-//👉 - Providing CarteList to DataTable
 const paymentsList = ref([])
 const loading = ref(false) 
 const GetData = () => {
@@ -154,7 +139,7 @@ const updateStatus =  (editPayment)=>{
   console.table(editPayment)
   editStatusPayment(editPayment.id,editPayment.status)
     .then(()=>{
-    toast.success("Status is Updated !.", {
+    toast.success("Le statut est mis à jour !.", {
         autoClose: 2000,position:"top-center"
       }); 
   })
@@ -184,17 +169,11 @@ onMounted(() => {
       <!-- 👉 Filters -->
       <VCardText>
         <div class="demo-space-x d-flex justify-space-between">
-          <VCol cols="12" md="5">
+          <VCol cols="12" md="6">
             <VTextField density="comfortable" label="Recherche Multicritère" variant="filled"
               prepend-inner-icon="tabler-search" v-model="search"
-              placeholder="Recherchez par student, type, amount, status, ..." />
+              placeholder="Chercher par Etudiant, Type, Montant et Statut" />
           </VCol>
-
-          <!-- <div>
-            <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter"
-              @click="exportToExcell" />
-           
-          </div> -->
         </div>
       </VCardText>
 
@@ -218,15 +197,11 @@ onMounted(() => {
 
             <template #item.nom_prenom="{ item }">
               <div class="d-flex align-center gap-x-3">
-                <VAvatar variant="tonal" color="secondary" size="40">{{ getAvatarText(item.student.lastName, item.student.firstName) }}
+                <VAvatar variant="outlined" color="primary" size="40">{{ getAvatarText(item.student.lastName, item.student.firstName) }}
                 </VAvatar>
                 <span>{{ item.student.lastName }} {{ item.student.firstName }}</span>
               </div>
             </template>
-
-            <!-- <template #item.date_naissance="{ item }">
-              <span>{{ getDateNaissance(item?.date_naissance) }}</span>
-            </template> -->
 
             <template #item.status="{ item }">
               <VChip variant="outlined" size="small" :color="resolveStatus(item.status)?.color">
@@ -237,40 +212,28 @@ onMounted(() => {
 
 
             <template #item.type="{ item }">
-              <VChip :label="false" size="small" :color="resolveType(item.type)?.color">
-                <b class="text-uppercase"> {{ resolveType(item.type)?.text }}</b>
+              <VChip :label="false" size="small" :color="resolveType(item?.type)?.color">
+                <b class="text-uppercase"> {{ resolveType(item?.type)?.text }}</b>
               </VChip>
             </template>
 
             <template #item.amount="{item}">
                {{ item.amount }}<span class="font-weight-bold"> DH </span>
             </template>
-
-            <!-- 
-            <template #item.id_verification="{ item }">
-              <VChip size="small" :color="resolveStatusVerification(item.id_verification)?.color">
-                <VIcon size="x-small" start :icon="resolveStatusVerification(item.id_verification)?.icon" />
-                <b class="text-uppercase"> {{ resolveStatusVerification(item.id_verification)?.text }}</b>
-              </VChip>
-            </template> -->
-
             <!-- ACTIONS -->
             <template #item.actions="{ item }">
               <IconBtn class="me-2 " @click="editStatus(item)">
                 <VIcon color="secondary" icon="tabler-edit
                 " />
+                <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent"
+                    >
+                      Modifier le statut.
+                </VTooltip>
               </IconBtn>
-             <!-- <IconBtn @click="editItem(item)">
-                <VIcon color="primary" icon="tabler-edit" />
-              </IconBtn>
--->              <!-- <IconBtn @click="deleteItem(item.cni)">
-            <VIcon color="error" icon="tabler-trash" />
-          </IconBtn> -->
             </template>
-
-
-
-            <!-- pagination -->
 
             <template #bottom>
               <VCardText v-if="listePayments" class="pt-2">
@@ -295,10 +258,6 @@ onMounted(() => {
     </div>
   </VCard>
 
-  <!-- <EditDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoEditDialogVisible"/>
- -->
-
-  <!-- <ViewDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoViewDialogVisible" /> -->
 <EditStatusPaymentDrawer :edit-payment="editPayment" v-model:isDrawerOpen="isEditStatusDialogVisible"
     @on-update="updateStatus" />
   
@@ -316,7 +275,6 @@ onMounted(() => {
 .v-table>.v-table__wrapper>table>tfoot>tr>th {
   font-weight: bolder !important;
   letter-spacing: 1.5px;
-  // font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .v-table>.v-table__wrapper>table>tbody>tr>td {

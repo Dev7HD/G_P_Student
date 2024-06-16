@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { router } from '@/plugins/1.router'
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
 import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
@@ -11,30 +10,36 @@ definePage({
     layout: 'blank',
   },
 })
+const isPasswordVisible = ref(false)
 
 const form = ref({
   email: '',
   password: '',
-  remember: false,
+})
+
+const resetForm = ref({
+  email: '',
+  password: '',
 })
 
 const generateRandomToken = () => {
   return Math.random().toString(36).substr(2);
 };
+
 const token = ref("")
 const logIn = async ()=>{
-  if(form.value.email=="ouss" && form.value.password=="123")
+  if((form.value.email=="ouss"||form.value.email=="ouss@gmail.com") && form.value.password=="123")
     {
        token.value =  generateRandomToken()
         useCookie("token").value=token.value
         useCookie("user").value="Bissi Oussama"
-
-      
-     await router.push({name:"root"})
+        await router.push({name:"root"})
     }
+  else{
+    
+  }
 }
 
-const isPasswordVisible = ref(false)
 </script>
 
 <template>
@@ -86,9 +91,9 @@ const isPasswordVisible = ref(false)
                 <AppTextField
                   v-model="form.email"
                   autofocus
-                  label="Email or Username"
+                  label="E-mail ou Nom d'utilisateur"
                   type="email"
-                  placeholder="email@exemple.com"
+                  placeholder="e-mail@exemple.com"
                 />
               </VCol>
 
@@ -96,7 +101,7 @@ const isPasswordVisible = ref(false)
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  label="Password"
+                  label="Mot de passe"
                   placeholder="············"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
@@ -112,7 +117,7 @@ const isPasswordVisible = ref(false)
                   class="my-7"
                   @click="logIn"
                 >
-                  Login
+                Se Connecter
                 </VBtn>
               </VCol>
 
@@ -123,17 +128,9 @@ const isPasswordVisible = ref(false)
                 cols="12"
                 class="d-flex align-center"
               >
-                <VDivider />
-                <VDivider />
+               
               </VCol>
 
-              <!-- auth providers -->
-              <VCol
-                cols="12"
-                class="text-center"
-              >
-                <AuthProvider />
-              </VCol>
             </VRow>
           </VForm>
         </VCardText>

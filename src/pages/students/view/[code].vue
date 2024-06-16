@@ -9,7 +9,6 @@ import "vue3-pdf-app/dist/icons/main.css";
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 //👉 - Variables
-// const props = defineProps(['verificationsList', 'isLoading'])
 const search = ref('')
 
 //👉 - Instance of our Store
@@ -34,63 +33,40 @@ const handleChange = () => {
 
 //👉 - Dialogs variables
 const studentData = ref<Student>({})
-const isCarteInfoEditDialogVisible = ref(false)
-const isCarteInfoViewDialogVisible = ref(false)
-
-//👉 - Methode for handling a verification type
-const resolveStatusVerification = (idVerification: number) => {
-  if (idVerification === null)
-    return { text: 'Non Verifiée', color: 'error', icon: 'tabler-ban' }
-  else
-    return { text: 'Verifiée', color: 'success', icon: 'tabler-check' }
-}
-
-//👉 - Data table options
+const route= useRoute()
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const headers = [
-  { title: 'Date Payment', key: 'date' },
+  { title: 'Date de Payment', key: 'date' },
   { title: 'Statut', key: 'status' },
-  // { title: 'الاسم و اللقب', key: 'nomAr_prenomAr' },
-  { title: 'Amount', key: 'amount' },
+  { title: 'Montant', key: 'amount' },
   { title: 'type', key: 'type' },
   { title: 'pdfUrl', key: 'receipt' },
 ]
 
-//👉 - Computed Functions
-// const totalOrder = computed(() => props.verificationsList.length)
-
-
-
-// SECTION METHODES
-//👉 - Methode for deleting an Item 
-const deleteItem = (itemId: number) => {
-  if (!props.verificationsList)
-    return
-
-  console.log(itemId);
-
-}
-
 //👉 - Methode for Resolving a Status
 const resolveStatus = (status: string) => {
   if (status === 'CREATED')
-    return { text: 'Created', color: 'success', icon: 'tabler-check' }
+    return { text: 'Créé', color: 'success', icon: 'tabler-check' }
   else if (status === 'VALIDATED')
-    return { text: 'Validated', color: 'primary', icon: 'tabler-checks' }
+    return { text: 'Valide', color: 'primary', icon: 'tabler-checks' }
   else 
-    return { text: 'Rejected', color: 'error', icon: 'tabler-ban' }
+    return { text: 'Rejetée', color: 'error', icon: 'tabler-ban' }
 
 }
 
-
-//👉 - Methode for showing a student
-const showItem = (item: Student) => {
-  console.table(item);
-  
+const resolveType = (type: string) => {
+  if (type === 'CHECK')
+    return { text: 'CHECK', color: 'info', icon: 'tabler-check' }
+  else if (type === 'TRANSFER')
+    return { text: 'TRANSFER', color: 'primary', icon: 'tabler-checks' }
+  else if (type === 'CASH')
+    return { text: 'CASH', color: 'light', icon: 'tabler-checks' }
+  return { text: 'DEPOSIT', color: 'warning', icon: 'tabler-ban' }
 }
+
 //👉 - Methode for handling format of the date naissance 
 const getDateNaissance = (date: Date) => {
   const customFormatDate = dayjs(date).format('YYYY - MM - DD');
@@ -105,14 +81,7 @@ const getAvatarText = (prenom: string, nom: string) => {
   return initials;
 }
 
-//👉 - Methode for handling onUpdate carte Event
-const updateCarte = (item: Carte) => {
-  carteData.value = item
-}
-
-
 //👉 - Methode for adding a verification to datatable
-const router = useRouter()
 
 const isDialogVisible  = ref(false);
 
@@ -121,11 +90,6 @@ const showModalAjout = () => {
   isDialogVisible.value = true 
 }
 
-
-// const isLoaded = computed(() => listeStudentPayments.value.length === 0)
-// const isLoaded = ref(listeStudentPayments.value)
-
-//👉 - Providing CarteList to DataTable
 const studentsList = ref([])
 const loading = ref(false) 
 const GetData = () => {
@@ -137,11 +101,10 @@ const GetData = () => {
   })
 
 }
-const route = useRoute()
 
 const addPaiement = async(obj)=>{    
       try {
-        const response = await axios.post('http://localhost:9090/payments/new', obj, {
+        const response = await axios.post(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/payments/new`, obj, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -153,7 +116,7 @@ const addPaiement = async(obj)=>{
         }, 1000)
       })
         console.log('Response:', response.data);
-        toast.success("Your Payment is Added !", {
+        toast.success("Votre paiement est ajouté !", {
         autoClose: 1000,position:"top-center"
       }); 
       } catch (error) {
@@ -163,7 +126,7 @@ const addPaiement = async(obj)=>{
 
 
 const pdfUrl = ref(null)
-  const currentStudent = ref<Student>({})
+const currentStudent = ref<Student>({})
 
 const showPdf =async (payment)=>{
   let blobUrl ,  data 
@@ -171,35 +134,19 @@ const showPdf =async (payment)=>{
         const url = URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
         pdfUrl.value = url
         isPdfDialogVisible.value = true
-      // window.open(url);
   })
-
-
-      //   const blob = new Blob([data],{
-      // type:'application/pdf'
-  //   blobUrl = window.URL.createObjectURL(blob);
-
-   
-  // }).then(()=> {
-  //   pdfUrl.value = blobUrl
-  //   console.log(pdfUrl.value);
-  // })
 }
 
 onMounted(() => {
       fetchOne(route.params.code).then(res=>  currentStudent.value = (res.data.value)
       )
-
       loading.value = true
       fetchStudentPayments(route.params.code).then((res)=>{
         setTimeout(() => {
           GetData()
           loading.value = false
-        }, 1000);
-     
-      })  
-     
-      
+        }, 1000);   
+      })   
 })
 </script>
 
@@ -227,10 +174,10 @@ onMounted(() => {
       <!-- 👉 Filters -->
       <VCardText>
         <div class="demo-space-x d-flex justify-space-between">
-          <VCol cols="12" md="5">
+          <VCol cols="12" md="6">
             <VTextField density="comfortable" label="Recherche Multicritère" variant="filled"
               prepend-inner-icon="tabler-search" v-model="search"
-              placeholder="Recherchez par cni, matricule, status..." />
+              placeholder="Chercher par Date de paiement, Statut, Type et Montant." />
           </VCol>
 
           <div>
@@ -269,7 +216,11 @@ onMounted(() => {
             <template #item.date="{ item }">
               <span>{{ getDateNaissance(item?.date) }}</span>
             </template>
-
+            <template #item.type="{ item }">
+              <VChip :label="false" size="small" :color="resolveType(item.type)?.color">
+                <b class="text-uppercase"> {{ resolveType(item.type)?.text }}</b>
+              </VChip>
+            </template>
             <template #item.receipt="{item}">
                 <VBtn
                   variant="outlined"
@@ -280,7 +231,13 @@ onMounted(() => {
                 >
                  Pdf
                 </VBtn>                
-
+                <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent"
+                    >
+                    Afficher le reçu de paiement.
+                </VTooltip>
             </template>
 
             <template #item.status="{ item }">
@@ -290,30 +247,10 @@ onMounted(() => {
               </VChip>
             </template>
            
-
-            <!-- ACTIONS -->
-            <!-- <template #item.actions="{ item }">
-               <RouterLink
-               
-                  :to="{ name: 'students-view-code', params: { code: item.code } }"
-                  class="font-weight-medium me-2"
-                  style="line-height: 1.375rem;"
-                >
-                <VIcon color="secondary" icon="tabler-eye" />
-                </RouterLink> -->
-             
-             <!-- <IconBtn @click="editItem(item)">
-                <VIcon color="primary" icon="tabler-edit" />
-              </IconBtn>
--->              <!-- <IconBtn @click="deleteItem(item.cni)">
-            <VIcon color="error" icon="tabler-trash" />
-          </IconBtn> -->
-            <!-- </template> -->
-
-
-
-            <!-- pagination -->
-
+            <template #item.amount="{item}">
+               {{ item.amount }}<span class="font-weight-bold"> DH </span>
+            </template>
+           
             <template #bottom>
               <VCardText v-if="listeStudentPayments" class="pt-2">
                 <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
@@ -328,23 +265,20 @@ onMounted(() => {
             </template>
           </VDataTable>
         </div>
-        <div v-else>
-          <VSkeletonLoader v-for="i in 10" :key="i" type="table-row-divider" />
+        <div class="pa-5"v-else>
+          <VAlert
+            title="Information"
+            color="warning"
+            type="info"
+            prominent
+            text="Aucune Paiement disponible... , Cliquer sur le bouton Nouvelle Paiement pour l'ajouter"
+          />        
         </div>
       </div>
     </div>
   </VCard>
   <ModalAjoutPayment :code="route.params.code" v-model:is-dialog-visible="isDialogVisible" @add-paiement="addPaiement"/>
- 
   <ModalPdf v-if="isPdfDialogVisible"  v-model:is-dialog-visible="isPdfDialogVisible" :pdf-url="pdfUrl"/>
-  <!-- <EditDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoEditDialogVisible"/>
- -->
-
-  <!-- <ViewDialog :carte-data="carteData" v-model:is-dialog-visible="isCarteInfoViewDialogVisible" />
-
-  <EditDialogDrawer :carte-data="carteData" v-model:isDrawerOpen="isCarteInfoEditDialogVisible"
-    @on-update="updateCarte" /> -->
-
 </template>
 
 
@@ -358,7 +292,6 @@ onMounted(() => {
 .v-table>.v-table__wrapper>table>tfoot>tr>th {
   font-weight: bolder !important;
   letter-spacing: 1.5px;
-  // font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 .v-table>.v-table__wrapper>table>tbody>tr>td {
@@ -390,6 +323,4 @@ onMounted(() => {
 }
 </style>
 
-<!-- <script setup lang="ts">
-const route = useRoute()
-</script> -->
+

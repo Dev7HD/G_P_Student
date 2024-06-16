@@ -4,6 +4,7 @@ interface Props {
   isDialogVisible: boolean
   title:string
   codeDelete:string
+  question:string
 }
 
 interface Emit {
@@ -57,23 +58,26 @@ const onConfirmation = () => {
           {{ props.confirmationQuestion }}
         </VCardText>
 
+        <VCardText class="text-h5 font-weight-bold  text-error">
+          {{ props.question }}
+        </VCardText>
+
+
       <VCardText class="d-flex align-center justify-center  gap-4 mt-4">
         <VBtn
           size="small"
-          color="success"
+          color="error"
           variant="elevated"
           @click="onConfirmation"
-          append-icon="tabler-check"
         >
           Supprimer 
         </VBtn>
 
         <VBtn
          size="small"
-          color="error"
-          variant="outlined"
+          color="secondary"
+          variant="tonal"
           @click="updateModelValue(false)"
-          append-icon="tabler-ban"
         >
           Annuler
         </VBtn>

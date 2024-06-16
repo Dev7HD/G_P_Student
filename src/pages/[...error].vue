@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import misc404 from '@images/pages/404.png'
-import miscMaskDark from '@images/pages/misc-mask-dark.png'
-import miscMaskLight from '@images/pages/misc-mask-light.png'
+import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant';
+import misc404 from '@images/404.png';
+import miscMaskDark from '@images/pages/misc-mask-dark.png';
+import miscMaskLight from '@images/pages/misc-mask-light.png';
 
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
 
@@ -19,19 +19,20 @@ definePage({
   <div class="misc-wrapper">
     <ErrorHeader
       status-code="404"
-      title="Page Not Found ⚠️"
-      description="We couldn't find the page you are looking for."
+      title="Page introuvable ⚠️"
+      description="Nous n'avons pas trouvé la page que vous recherchez."
     />
 
     <VBtn
-      to="/"
-      class="mb-11"
+      :to="{ name: 'root' }"
+      class="mb-0 index"
+      
     >
-      Back to Home
+    <span class="text-uppercase">  Revenir à l'accueil</span>
     </VBtn>
 
     <!-- 👉 Image -->
-    <div class="misc-avatar w-100 text-center">
+    <div class="misc-avatar w-100 text-center margin" >
       <VImg
         :src="misc404"
         alt="error 404"
@@ -51,4 +52,11 @@ definePage({
 
 <style lang="scss">
 @use "@core/scss/template/pages/misc.scss";
+
+.index{
+  z-index: 1000000;
+}
+.margin{
+  margin-top: -66px;
+}
 </style>

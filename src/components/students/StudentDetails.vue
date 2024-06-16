@@ -20,7 +20,7 @@ const props = defineProps<Props>()
           </VCardTitle>
           <VCardTitle class="text-body-1 ">
           <p class="clamp-text mb-0 ">
-           Email : <span class="font-weight-bold text-h5">{{ props.student.email }}</span>
+           E-mail : <span class="font-weight-bold text-h5">{{ props.student.email }}</span>
           </p>
         </VCardTitle>
         </VCardItem>

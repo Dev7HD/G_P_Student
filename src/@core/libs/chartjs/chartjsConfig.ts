@@ -31,14 +31,14 @@ export const getLatestBarChartConfig = (themeColors: ThemeInstance['themes']['va
       },
       y: {
         min: 0,
-        max: 50000,
+        max: 100000,
         grid: {
           borderColor,
           drawBorder: false,
           color: borderColor,
         },
         ticks: {
-          stepSize: 100,
+          stepSize: 50000,
           color: labelColor,
         },
       },

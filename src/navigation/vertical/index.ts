@@ -1,6 +1,6 @@
 export default [
   {
-    title: 'Home',
+    title: 'Accueil',
     to: { name: 'root' },
     icon: { icon: 'tabler-home' },
   },
@@ -11,7 +11,7 @@ export default [
     icon: { icon: 'tabler-brand-cashapp' },
   },
    {
-    title: 'Students',
+    title: 'Étudiants',
     to: { name: 'students' },
     icon: { icon: 'tabler-users' },
   }

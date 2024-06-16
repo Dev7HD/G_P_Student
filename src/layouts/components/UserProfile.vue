@@ -3,26 +3,15 @@ import user1 from '@images/user.jpg';
 
 const router = useRouter()
 
-// TODO: Get type from backend
-const user = useCookie<any>('user')
-
 const logout = async () => {
-  // Remove "accessToken" from cookie
   useCookie('token').value = null
-
-  // Remove "userData" from cookie
-  user.value = useCookie("user").value
-
-  // Redirect to login page
-  await router.push('/login')
-
-  // ℹ️ We had to remove abilities in then block because if we don't nav menu items mutation is visible while redirecting user to login page
-  // Remove "userAbilities" from cookie
   useCookie('user').value = null
+  await router.push('/login')
+  
 
   
 }
-
+const user = useCookie("user").value
 const userProfileList = [
   { type: 'divider' },
   { type: 'navItem', icon: 'tabler-user', title: 'Profile', to: { name: 'apps-user-view-id', params: { id: 21 } } },
@@ -80,14 +69,14 @@ const userProfileList = [
               </VListItemAction>
             </template>
 
-            <VListItemTitle class="font-weight-bold text-uppercqse">
+            <VListItemTitle class="font-weight-bold text-uppercase">
               {{user ? user : "not Found"}}
             </VListItemTitle>
-            <VListItemSubtitle>{{user ? "Admin" : "User"}}</VListItemSubtitle>
+            <VListItemSubtitle>{{user ? "ADMINISTRATEUR" : "UTILISATEUR"}}</VListItemSubtitle>
           </VListItem>
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="logout" to="/login">
             <template #prepend>
               <VIcon
                 class="me-2"
@@ -96,9 +85,8 @@ const userProfileList = [
               />
             </template>
 
-            <VListItemTitle  @click="logout">
-              
-                Logout
+            <VListItemTitle  >
+              Se Déconnecter
             </VListItemTitle>
           </VListItem>
         </VList>

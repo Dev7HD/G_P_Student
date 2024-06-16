@@ -1,39 +1,37 @@
 <template>
 <VCard class="mb-6">
-      <VCardText class="py-12 position-relative">
+      <VCardText class=" d-flex  ">
+        <img
+          :src="academyCourseIllustration1"
+          height="150"
+        >
+       
         <div
-          class="d-flex flex-column gap-y-4 mx-auto"
-          :class="$vuetify.display.mdAndUp ? 'w-100' : $vuetify.display.xs ? 'w-50' : 'w-75'"
+          class="d-flex flex-column gap-y-4 justify-center mx-auto"
+          
         >
           <h4
             class="text-h4 text-center text-uppercase text-wrap mx-auto"
             
           >
-          Bienvenue sur notre application de <span class="text-decoration-underline text-primary text-no-wrap">gestion des paiements des étudiants.</span>
+          <span class="text-decoration-underline text-primary text-no-wrap">gestion des paiements des étudiants.</span>
           </h4>
           <p class="text-center text-wrap text-body-1 mx-auto mb-0">
-            Facilitez vos paiements avec notre application . </p>
+            Simplifiez la gestion de vos finances étudiantes avec notre solution intuitive et sécurisée. </p>
         </div>
-        <img
-          :src="academyCourseIllustration2"
-          class="illustration1 d-none d-md-block"
-          height="180"
-        >
-        <img
-          :src="academyCourseIllustration1"
-          class="illustration2 d-none d-md-block"
-          height="180"
-        >
+        
       </VCardText>
 </VCard>
 
 
   <VRow id=" match-height">
-    <VCol cols="12" md="6">
+    <VCol cols="12" md="6" sm="12">
       <VCard
-        title="Statut des Paiements"
-        subtitle="Statistiques des paiements classés par statut."
-      >
+        title="Répartition des Paiements par Statut."
+        >
+        <template #subtitle>
+          <span class="text-wrap text-caption">Visualisation de la distribution des paiements crées , rejetées et validées.</span>
+        </template>
         <VCardText>
           <PolarAreaChart
           v-if="dataSetsByStatus"
@@ -47,10 +45,11 @@
     <!-- 👉 Statistics Line Chart  -->
     <VCol cols="12" md="6">
       <VCard
-         title="Date des Paiements"
-        subtitle="Statistiques des paiements classés par date."
+        title="Répartition des Montants par Date de Paiement."
       >
-      
+      <template #subtitle>
+          <span class="text-wrap text-caption">Visualisation des montants totaux payés chaque jour pour la période sélectionnée.</span>
+        </template>
         <VCardText>
           <BarChart
             v-if="dataSets"
@@ -67,32 +66,13 @@
 </template>
 
 
-<style lang="scss">
-
-.illustration1 {
-  position: absolute;
-  inset-block-end: 0;
-  inset-inline-end: 0;
-}
-
-.illustration2 {
-  position: absolute;
-  inset-block-start: 2rem;
-  inset-inline-start: 2.5rem;
-}
-</style>
-
-
-
-
 
 <script setup lang="ts">
 import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
 import { getLatestBarChartConfig, getPolarChartConfig } from '@core/libs/chartjs/chartjsConfig'
 import BarChart from '@core/libs/chartjs/components/BarChart'
 import PolarAreaChart from '@core/libs/chartjs/components/PolarAreaChart'
-import academyCourseIllustration2 from '@images/illustrations/classic-pack-payment-methods.png'
-import academyCourseIllustration1 from '@images/illustrations/payment-elements-background.png'
+import academyCourseIllustration1 from '@images/111676393_10030673.jpg'
 import axios from 'axios'
 
 import { useTheme } from 'vuetify'
@@ -140,32 +120,33 @@ async function fetchPaymentData(): Promise<PaymentData[]> {
 
 // Function to process payment data and aggregate totals by date
 async function processData(): Promise<any> {
-  const paymentData = await fetchPaymentData()
+  const paymentData = await fetchPaymentData();
+  
   const aggregatedData = paymentData.reduce((acc, curr) => {
-    
     // Assuming date is in ISO format, extract date
-    let IsoDate = new Date(curr.date)
-    const date = IsoDate.toISOString().split('T')[0] // Extract date portion if date is in ISO format
+    let IsoDate = new Date(curr.date);
+    const date = IsoDate.toISOString().split('T')[0]; // Extract date portion if date is in ISO format
     if (!acc[date]) {
-      acc[date] = 0
+      acc[date] = 0;
     }
-    acc[date] += curr.amount
-    return acc
-  }, {})
-  const sortedDates = Object.keys(aggregatedData).sort((a, b) => new Date(a).getTime() - new Date(b).getTime())
+    acc[date] += curr.amount;
+    return acc;
+  }, {});
+
+  const sortedDates = Object.keys(aggregatedData).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
   return {
-    labels: Object.keys(aggregatedData),
+    labels: sortedDates,
     datasets: [
-    {
-      maxBarThickness: 20,
-      backgroundColor: colors.primary,
-      borderColor: 'transparent',
-      borderRadius: { topRight: 15, topLeft: 15 },
-      data: sortedDates.map(date => aggregatedData[date]),
-    },
-  ]
-  }
+      {
+        maxBarThickness: 15,
+        backgroundColor: colors.primary,
+        borderColor: 'transparent',
+        borderRadius: { topRight: 15, topLeft: 15 },
+        data: sortedDates.map(date => aggregatedData[date]),
+      },
+    ]
+  };
 }
 
 async function processDataByStatus(): Promise<any> {
@@ -184,7 +165,7 @@ async function processDataByStatus(): Promise<any> {
     datasets: [
       {
         borderWidth: 0,
-        label: 'Total Payments by Status',
+        label: 'Total par statut ',
         data: Object.values(aggregatedData),
         backgroundColor: [
           colors.error,
@@ -203,9 +184,9 @@ onMounted(()=>{
   processData().then(res=>{
     dataSets.value = res
 })
-processDataByStatus().then(res=>{
-    dataSetsByStatus.value = res
-})
+  processDataByStatus().then(res=>{
+      dataSetsByStatus.value = res
+  })
 })
 const chartConfig = computed(() => getPolarChartConfig(vuetifyTheme.current.value))
 const chartConfigBar = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))

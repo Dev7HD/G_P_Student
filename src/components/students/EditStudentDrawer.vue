@@ -69,7 +69,7 @@ const dialogModelValueUpdate = (val: boolean) => {
   <VNavigationDrawer temporary location="end" :model-value="props.isDrawerOpen" width="370" :border="0"
     class="scrollable-content" @update:model-value="dialogModelValueUpdate">
     <!-- 👉 Header -->
-    <AppDrawerHeaderSection title="MODIFICATION"   @cancel="$emit('update:isDrawerOpen', false)">
+    <AppDrawerHeaderSection class="text-body-1" title="MODIFICATION"   @cancel="$emit('update:isDrawerOpen', false)">
      
     </AppDrawerHeaderSection>
 
@@ -86,7 +86,7 @@ const dialogModelValueUpdate = (val: boolean) => {
             cols="12"
           >
             <AppTextField
-              v-model="editStudent.code"
+              v-model="newStudent.code"
               label="Code"
               placeholder="Entrer le code de l'Etudiant(e)"
               disabled
@@ -96,7 +96,7 @@ const dialogModelValueUpdate = (val: boolean) => {
             cols="12"
           >
             <AppTextField
-              v-model="editStudent.firstName"
+              v-model="newStudent.firstName"
               label="Prénom"
               placeholder="Entrer le Prénom  du l'Etudiant(e)"
               :rules="[requiredValidator]"
@@ -107,7 +107,7 @@ const dialogModelValueUpdate = (val: boolean) => {
             cols="12"
           >
             <AppTextField
-              v-model="editStudent.lastName"
+              v-model="newStudent.lastName"
               label="Nom"
               placeholder="Entrer le Nom  du l'Etudiant(e)"
               :rules="[requiredValidator]"
@@ -116,16 +116,16 @@ const dialogModelValueUpdate = (val: boolean) => {
           </VCol>
           <VCol cols="12">
                 <AppTextField
-                  v-model="editStudent.email"
-                  label="Email"
-                  placeholder="ouss@example.com"
+                  v-model="newStudent.email"
+                  label="E-mail"
+                  placeholder="e-mail@example.com"
                   type="email"
                   :rules="[requiredValidator, emailValidator]"
                 />
               </VCol>
          <!-- 👉 Status -->
               <VCol cols="12">
-                <AppSelect :items="filieres" v-model="props.editStudent.programId"
+                <AppSelect :items="filieres" v-model="newStudent.programId"
                   label="Program" placeholder="Active" color="secondary" chips />
               </VCol>
               <!-- 👉 Form buttons -->

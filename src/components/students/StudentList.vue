@@ -9,13 +9,11 @@ import * as XLSX from 'xlsx';
 
 
 //👉 - Variables
-// const props = defineProps(['verificationsList', 'isLoading'])
 const search = ref('')
-const route = useRoute()
 //👉 - Instance of our Store
 const store = useStudentStore()
 const { listeStudents, isLoading } = storeToRefs(store)
-const { fetchAll,updateOne,deleteOne } = store
+const { fetchAll, updateOne, deleteOne } = store
 
 
 
@@ -37,8 +35,6 @@ const studentData = ref<Student>({})
 const isAjoutEtudiantDialogVisible = ref(false)
 const isDeleteDialogVisible = ref(false)
 
-
-
 //👉 - Data table options
 const itemsPerPage = ref(10)
 const page = ref(1)
@@ -47,58 +43,51 @@ const orderBy = ref()
 const headers = [
   { title: 'Code', key: 'code' },
   { title: 'Nom Complet', key: 'nom_prenom' },
-  // { title: 'الاسم و اللقب', key: 'nomAr_prenomAr' },
-
   { title: 'Filière', key: 'programId' },
-  { title: 'Email', key: 'email' },
+  { title: 'E-mail', key: 'email' },
   { title: 'ACTIONS', key: 'actions', sortable: false },
 ]
 
-//👉 - Computed Functions
-// const totalOrder = computed(() => props.verificationsList.length)
-
-
 const isEditStudentDialogVisible = ref(false)
 const editStudent = ref<Student>({})
-
-const editerStudent = (item)=>{
+const editerStudent = (item) => {
   editStudent.value = item
   isEditStudentDialogVisible.value = true
 }
 
 const codeDelete = ref('')
-const deleteStudentModal = (code:string)=>{
+const deleteStudentModal = (code: string) => {
   codeDelete.value = code
   isDeleteDialogVisible.value = true
 }
 
-const deleteStudent = (code:string)=>{
-  deleteOne(code).then(()=>{
+const deleteStudent = (code: string) => {
+  deleteOne(code).then(() => {
     fetchAll().then((res) => {
       setTimeout(() => {
         GetData()
         loading.value = false
       }, 1000)
     })
-  }).then(()=>{
-      toast.warning("Your Student is DELETED !", {
-        autoClose: 2000,position:"top-center"
-      }); 
+  }).then(() => {
+    toast.warning("Votre étudiant est SUPPRIMÉ !", {
+      autoClose: 2000, position: "top-center"
+    });
   })
 }
 
-const updateStudent = (editStudent)=>{
+const updateStudent = (editStudent) => {
   updateOne(editStudent).then(()=>{
-    
-      toast.info("Your Student is Updated !", {
-        autoClose: 1000,position:"top-center"
-      }); 
-  })
-}
-
-// SECTION METHODES
-//👉 - Methode for deleting an Item 
-
+    fetchAll().then((res) => {
+    setTimeout(() => {
+      GetData()
+    }, 1000);
+  }).then(() => 
+    toast.success("Votre étudiant est mis à jour !", {
+      autoClose: 2000, position: "top-center"
+    })
+  )}
+  )}
 
 //👉 - Methode for Resolving a Status
 const resolveStatus = (status: string) => {
@@ -124,11 +113,7 @@ const resolveProgramId = (programId: string) => {
 
 }
 
-//👉 - Methode for showing a student
-const showItem = (item: Student) => {
-  console.table(item);
 
-}
 //👉 - Methode for handling format of the date naissance 
 const getDateNaissance = (date: Date) => {
   const customFormatDate = dayjs(date).format('YYYY - MM - DD');
@@ -143,19 +128,6 @@ const getAvatarText = (prenom: string, nom: string) => {
   return initials;
 }
 
-//👉 - Methode for handling onUpdate carte Event
-const updateCarte = (item: Carte) => {
-  carteData.value = item
-}
-
-
-//👉 - Methode for adding a verification to datatable
-const router = useRouter()
-const addVerification = () => {
-  router.push('/new-verification')
-}
-
-
 //👉 - Methode for export data to Excell
 const exportToExcell = () => {
   const worksheet = XLSX.utils.json_to_sheet(studentsList.value);
@@ -164,11 +136,6 @@ const exportToExcell = () => {
   XLSX.writeFile(workbook, 'liste_globale_students.xlsx');
 }
 
-
-// const isLoaded = computed(() => listeStudents.value.length === 0)
-// const isLoaded = ref(listeStudents.value)
-
-//👉 - Providing CarteList to DataTable
 const studentsList = ref([])
 const loading = ref(false)
 const GetData = () => {
@@ -183,7 +150,6 @@ const GetData = () => {
 const addEtudiant = async (etudiant) => {
   console.log(etudiant);
   await axios.post(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/students/new`,
-
     {
       firstName: etudiant.firstName,
       lastName: etudiant.lastName,
@@ -192,10 +158,10 @@ const addEtudiant = async (etudiant) => {
       programId: etudiant.programId
     }
 
-  ).catch((err)=>{
-     toast.error(err.message, {
-        autoClose: 2000,position:"top-center"
-      }); 
+  ).catch((err) => {
+    toast.error(err.message, {
+      autoClose: 2000, position: "top-center"
+    });
   })
 
 
@@ -204,16 +170,15 @@ const addEtudiant = async (etudiant) => {
       GetData()
       loading.value = false
     }, 1000)
-  }).then(()=>{
-    toast.success("Your Student is Added !", {
-        autoClose: 2000,position:"top-center"
-      }); 
+  }).then(() => {
+    toast.success("Votre étudiant est ajouté !", {
+      autoClose: 2000, position: "top-center"
+    });
   })
 
 }
 
 onMounted(() => {
-
   loading.value = true
   fetchAll().then((res) => {
     setTimeout(() => {
@@ -221,8 +186,6 @@ onMounted(() => {
       loading.value = false
     }, 1000);
   })
-
-
 })
 </script>
 
@@ -230,20 +193,23 @@ onMounted(() => {
 <template>
 
   <VCard no-padding>
-    <VCardTitle class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">LISTE DES ETUDIANTS
+    <VCardTitle class="pt-9 pl-10 text-h5 "> <span class="letter-spacing font-weight-bold">LISTE DES ÉTUDIANTS
       </span></VCardTitle>
     <div>
 
       <!-- 👉 Filters -->
       <VCardText>
         <div class="demo-space-x d-flex justify-space-between">
-          <VCol cols="12" md="5">
-            <VTextField density="comfortable" label="Recherche Multicritère" variant="filled" prepend-inner-icon="tabler-search" v-model="search" placeholder="Recherchez par nom complet, filière, email." />
+          <VCol cols="12" md="6">
+            <VTextField density="comfortable" label="Recherche Multicritère" variant="filled"
+              prepend-inner-icon="tabler-search" v-model="search"
+              placeholder="Chercher par Nom complet, Filière et E-mail." />
           </VCol>
 
           <div>
-            <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter" @click="exportToExcell" />
-            <VBtn variant="flat" color="primary" @click="isAjoutEtudiantDialogVisible=true">
+            <VBtn variant="tonal" class="mr-3" color="secondary" prepend-icon="tabler-upload" text="Exporter"
+              @click="exportToExcell" />
+            <VBtn variant="flat" color="primary" @click="isAjoutEtudiantDialogVisible = true">
               <v-icon icon="tabler-new-section" size="20" start> </v-icon>Nouvelle étudiant
             </VBtn>
           </div>
@@ -256,7 +222,8 @@ onMounted(() => {
       <!-- 👉 Data Table  -->
       <div v-else>
         <div v-if="listeStudents.length > 0">
-          <VDataTable :loading="loading" :headers="headers" :items="studentsList" :search="search" v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
+          <VDataTable :loading="loading" :headers="headers" :items="studentsList" :search="search"
+            v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
 
             <template #loading>
               <VSkeletonLoader v-for="i in 10" :key="i" type="table-row-divider" />
@@ -271,31 +238,56 @@ onMounted(() => {
               </div>
             </template>
 
-          
+
 
             <template #item.programId="{ item }">
               <VChip size="small" :color="resolveProgramId(item.programId)?.color">
                 <b class="text-uppercase"> {{ resolveProgramId(item.programId)?.text }}</b>
               </VChip>
             </template>
-           
+
 
             <!-- ACTIONS -->
             <template #item.actions="{ item }">
 
-              <RouterLink :to="{ name: 'students-view-code', params: { code: item.code } }" class="font-weight-medium " style="line-height: 1.375rem;">
+              <RouterLink :to="{ name: 'students-view-code', params: { code: item.code } }" class="font-weight-medium "
+                style="line-height: 1.375rem;">
 
-                <IconBtn>
-                  <VIcon color="secondary" icon="tabler-eye" />
+                <IconBtn >
+                  <VIcon color="secondary" icon="tabler-eye" >
+                    
+                  </VIcon>
+                  
+                  <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent"
+                    >
+                    Voir les détails.
+                    </VTooltip>
                 </IconBtn>
 
               </RouterLink>
-              <IconBtn  @click="editerStudent(item)">
-                <VIcon  color="primary" icon="tabler-edit" />
+              <IconBtn @click="editerStudent(item)">
+                <VIcon color="primary" icon="tabler-edit" />
+                <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent"
+                    >
+                      Modifier l'étudiant.
+                    </VTooltip>
               </IconBtn>
               <IconBtn @click="deleteStudentModal(item.code)">
-               <VIcon color="error" icon="tabler-trash" />
-          </IconBtn>
+                <VIcon color="error" icon="tabler-trash" />
+                <VTooltip
+                      open-on-focus
+                      location="top"
+                      activator="parent"
+                    >
+                      Supprimer l'étudiant.
+                </VTooltip>
+              </IconBtn>
             </template>
 
             <!-- pagination -->
@@ -303,9 +295,13 @@ onMounted(() => {
             <template #bottom>
               <VCardText v-if="listeStudents" class="pt-2">
                 <div class="d-flex flex-wrap justify-center justify-sm-space-between gap-y-2 mt-2">
-                  <VSelect v-model="options.itemsPerPage" :items="paginationItems" style="max-inline-size: 8rem;min-inline-size: 5rem;  font-size: 95px;" label="Lignes par page :" variant="filled" @update:model-value="handleChange" />
+                  <VSelect v-model="options.itemsPerPage" :items="paginationItems"
+                    style="max-inline-size: 8rem;min-inline-size: 5rem;  font-size: 95px;" label="Lignes par page :"
+                    variant="filled" @update:model-value="handleChange" />
 
-                  <VPagination v-model="options.page" :total-visible="$vuetify.display.smAndDown ? 3 : 4" :length="Math.ceil(listeStudents.length / options.itemsPerPage)" rounded="circle" active-color="primary" />
+                  <VPagination v-model="options.page" :total-visible="$vuetify.display.smAndDown ? 3 : 4"
+                    :length="Math.ceil(listeStudents.length / options.itemsPerPage)" rounded="circle"
+                    active-color="primary" />
                 </div>
               </VCardText>
             </template>
@@ -320,12 +316,13 @@ onMounted(() => {
   </VCard>
 
   <ModalAjouteEtudiant v-model:is-dialog-visible="isAjoutEtudiantDialogVisible" @add-etudiant="addEtudiant" />
- 
+
 
   <EditStudentDrawer :edit-student="editStudent" v-model:isDrawerOpen="isEditStudentDialogVisible"
     @on-update="updateStudent" />
 
-  <DeleteConfirmation :code-delete="codeDelete" v-model:is-dialog-visible="isDeleteDialogVisible"  confirmation-question="Vouler vous vraiment supprimer l'Etudiant ? " title="SUPPRESSION" @confirm="deleteStudent"/>
+  <DeleteConfirmation :code-delete="codeDelete" v-model:is-dialog-visible="isDeleteDialogVisible"
+    confirmation-question="En supprimant cet étudiant, tous les paiements liés à cet étudiant seront également supprimés." question="Voullez-vous vraiment le supprimer?" title="ATTENTION" @confirm="deleteStudent" />
 
 </template>
 
@@ -335,15 +332,15 @@ onMounted(() => {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif !important;
 }
 
-.v-table > .v-table__wrapper > table > tbody > tr > th,
-.v-table > .v-table__wrapper > table > thead > tr > th,
-.v-table > .v-table__wrapper > table > tfoot > tr > th {
+.v-table>.v-table__wrapper>table>tbody>tr>th,
+.v-table>.v-table__wrapper>table>thead>tr>th,
+.v-table>.v-table__wrapper>table>tfoot>tr>th {
   font-weight: bolder !important;
   letter-spacing: 1.5px;
   // font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
-.v-table > .v-table__wrapper > table > tbody > tr > td {
+.v-table>.v-table__wrapper>table>tbody>tr>td {
   font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
     "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
 }
@@ -369,5 +366,11 @@ onMounted(() => {
 .letter-spacing {
   letter-spacing: 2px;
   word-spacing: 2px;
+}
+
+
+.tooltip-background-color{
+  color: blue !important;
+  background-color: blue !important;
 }
 </style>

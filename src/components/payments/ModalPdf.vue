@@ -46,16 +46,9 @@ watch(props, () => {
     <DialogCloseBtn @click="$emit('update:isDialogVisible', false)" />
 
     <!-- Dialog Content -->
-    <VCard title="Paiement Détails">
+    <VCard title="Le PDF de votre Paiement.">
       <VCardText>
         <VRow>
-         <!-- <VImg
-            height="275"
-            width="419"
-            :src="urlImg"
-            class="mx-auto"
-            />
-          </VCol> -->
           <VCol cols="12">
             <vue-pdf-app v-if="props.pdfUrl"  style="height: 100vh;" :pdf="props.pdfUrl"></vue-pdf-app>
           </VCol>
@@ -69,7 +62,7 @@ watch(props, () => {
           @click="updateModelValue(false)"
 
         >
-         Close        
+         Fermer        
         </VBtn>
       
       </VCardText>

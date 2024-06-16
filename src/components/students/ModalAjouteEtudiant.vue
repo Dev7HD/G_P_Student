@@ -48,14 +48,6 @@ const onSubmit = ()=>{
       updateModelValue(false)
     }
   })
-      // console.log(file.value[0]);
-      // form.append('studentCode',props.code);
-      // form.append('amount',amount.value);
-      // form.append('paymentType',type.value);
-      // form.append('date',date.value);
-      // form.append('file',file.value[0]);
-      // emit('addEtudiant',createEtudiant)
-      // updateModelValue(false)
 }
 
 </script>
