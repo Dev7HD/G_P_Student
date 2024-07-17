@@ -4,6 +4,7 @@ import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
 import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
 import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
+import axios from 'axios'
 
 definePage({
   meta: {
@@ -11,14 +12,13 @@ definePage({
   },
 })
 const isPasswordVisible = ref(false)
-
 const form = ref({
-  email: '',
+  username: '',
   password: '',
 })
 
 const resetForm = ref({
-  email: '',
+  username: '',
   password: '',
 })
 
@@ -28,16 +28,11 @@ const generateRandomToken = () => {
 
 const token = ref("")
 const logIn = async ()=>{
-  if((form.value.email=="ouss"||form.value.email=="ouss@gmail.com") && form.value.password=="123")
-    {
-       token.value =  generateRandomToken()
-        useCookie("token").value=token.value
-        useCookie("user").value="Bissi Oussama"
-        await router.push({name:"root"})
-    }
-  else{
-    
-  }
+  if(form.value.username === 'bissi_ouss')form.value.username = 'student'
+    const res = await axios.post(import.meta.env.VITE_SPRING_BOOT_API_URL+"/auth/login?username="+form.value.username+"&password="+form.value.password)
+    useCookie("accessToken").value=res.data["access_token"]
+    await router.push({name:"root"})
+ 
 }
 
 </script>
@@ -89,11 +84,11 @@ const logIn = async ()=>{
               <!-- email -->
               <VCol cols="12">
                 <AppTextField
-                  v-model="form.email"
+                  v-model="form.username"
                   autofocus
-                  label="E-mail ou Nom d'utilisateur"
-                  type="email"
-                  placeholder="e-mail@exemple.com"
+                  label="Nom d'utilisateur"
+                  type="text"
+                  placeholder="Nom d'utilisateur"
                 />
               </VCol>
 

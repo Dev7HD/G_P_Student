@@ -102,6 +102,14 @@ const GetData = () => {
 
 }
 
+const sortByDate = () => {
+  listeStudentPayments.value.sort((a, b) => {
+    const date1 = new Date(a.date)
+    const date2 = new Date(b.date)    
+    return new Date(date2).getDate() - new Date(date1).getDate()
+  });
+}
+
 const addPaiement = async(obj)=>{    
       try {
         const response = await axiosIns.post(`/payments/new`, obj, {
@@ -109,9 +117,10 @@ const addPaiement = async(obj)=>{
             'Content-Type': 'multipart/form-data',
           },
         });
-        fetchStudentPayments(route.params.code).then((res)=>{
+        fetchStudentPayments("11223344").then((res)=>{
         setTimeout(() => {
           GetData()
+          sortByDate()
           loading.value = false
         }, 1000)
       })
@@ -138,12 +147,13 @@ const showPdf =async (payment)=>{
 }
 
 onMounted(() => {
-      fetchOne(route.params.code).then(res=>  currentStudent.value = (res.data.value)
+      fetchOne('11223344').then(res=>  currentStudent.value = (res.data.value)
       )
       loading.value = true
-      fetchStudentPayments(route.params.code).then((res)=>{
+      fetchStudentPayments('11223344').then((res)=>{
         setTimeout(() => {
           GetData()
+          sortByDate()
           loading.value = false
         }, 1000);   
       })   
@@ -277,7 +287,7 @@ onMounted(() => {
       </div>
     </div>
   </VCard>
-  <ModalAjoutPayment :code="route.params.code" v-model:is-dialog-visible="isDialogVisible" @add-paiement="addPaiement"/>
+  <ModalAjoutPayment :code="'11223344'" v-model:is-dialog-visible="isDialogVisible" @add-paiement="addPaiement"/>
   <ModalPdf v-if="isPdfDialogVisible"  v-model:is-dialog-visible="isPdfDialogVisible" :pdf-url="pdfUrl"/>
 </template>
 

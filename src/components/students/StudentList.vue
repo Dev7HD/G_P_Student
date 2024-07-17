@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Student } from "@/@core/types";
+import axiosIns from '@/plugins/axiosIns';
 import { useStudentStore } from '@/store/useStudentStore';
-import axios from "axios";
 import dayjs from 'dayjs';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -149,14 +149,15 @@ const GetData = () => {
 }
 const addEtudiant = async (etudiant) => {
   console.log(etudiant);
-  await axios.post(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/students/new`,
+  await axiosIns.post(`/students/new`,
     {
       firstName: etudiant.firstName,
       lastName: etudiant.lastName,
       email: etudiant.email,
       code: etudiant.code,
       programId: etudiant.programId
-    }
+    },
+    
 
   ).catch((err) => {
     toast.error(err.message, {

@@ -5,14 +5,11 @@
           :src="academyCourseIllustration1"
           height="150"
         >
-       
         <div
           class="d-flex flex-column gap-y-4 justify-center mx-auto"
-          
         >
           <h4
             class="text-h4 text-center text-uppercase text-wrap mx-auto"
-            
           >
           <span class="text-decoration-underline text-primary text-no-wrap">gestion des paiements des étudiants.</span>
           </h4>
@@ -24,7 +21,7 @@
 </VCard>
 
 
-  <VRow id=" match-height">
+  <VRow id=" match-height" v-if="useCookie('role').value =='admin'">
     <VCol cols="12" md="6" sm="12">
       <VCard
         title="Répartition des Paiements par Statut."
@@ -62,26 +59,36 @@
     </VCol>
    
   </VRow>
-
+<VRow v-if="useCookie('role').value =='student'">
+  <VCol cols="12" >
+    <StudentPaymentsList/>
+  </VCol>
+</VRow>
 </template>
 
 
 
 <script setup lang="ts">
+import StudentPaymentsList from '@/components/students/StudentPaymentsList.vue'
+import axiosIns from '@/plugins/axiosIns'
+import { useUserStore } from '@/store/useUserStore'
 import type { ChartJsCustomColors } from '@/views/charts/chartjs/types'
 import { getLatestBarChartConfig, getPolarChartConfig } from '@core/libs/chartjs/chartjsConfig'
 import BarChart from '@core/libs/chartjs/components/BarChart'
 import PolarAreaChart from '@core/libs/chartjs/components/PolarAreaChart'
 import academyCourseIllustration1 from '@images/111676393_10030673.jpg'
-import axios from 'axios'
-
 import { useTheme } from 'vuetify'
 interface PaymentData {
   date: string;
   amount: number;
 }
 
-
+definePage({
+  meta: {
+    action: 'read',
+    subject: 'Admin',
+  },
+})
 const colors: ChartJsCustomColors = {
   white: '#fff',
   yellow: '#ffe802',
@@ -106,11 +113,10 @@ const colors: ChartJsCustomColors = {
 }
 
 const vuetifyTheme = useTheme()
-
 // Function to fetch payment data from API
 async function fetchPaymentData(): Promise<PaymentData[]> {
   try {
-    const response = await axios.get(import.meta.env.VITE_SPRING_BOOT_API_URL+'/payments/all') // Replace with your API endpoint
+    const response = await axiosIns.get('/payments/all') 
     return response.data
   } catch (error) {
     console.error('Error fetching payment data:', error)
@@ -177,16 +183,33 @@ async function processDataByStatus(): Promise<any> {
   }
 }
 
+
+const role = ref(useUserStore().role)
+console.log(role.value);
+watch(role,(newVal,oldVal)=>{
+  console.log(newVal,oldVal);
+  
+})
 const dataSets = ref(null)
 const dataSetsByStatus = ref(null)
-
-onMounted(()=>{
-  processData().then(res=>{
+  let userAbilities = [{
+        action: 'manage',
+        subject: useUserStore().role,
+      }]
+      
+  const ability = useAbility()
+  ability.update(userAbilities)
+  
+onMounted(()=>{  
+  useUserStore().setRole(useCookie("role").value)
+  if (useUserStore().role == 'admin') {
+    processData().then(res=>{
     dataSets.value = res
-})
+  })
   processDataByStatus().then(res=>{
       dataSetsByStatus.value = res
   })
+  }
 })
 const chartConfig = computed(() => getPolarChartConfig(vuetifyTheme.current.value))
 const chartConfigBar = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))

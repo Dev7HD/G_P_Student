@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import type { Component } from 'vue'
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VNodeRenderer } from './VNodeRenderer'
 import { layoutConfig } from '@layouts'
 import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
 import type { NavGroup, NavLink, NavSectionTitle, VerticalNavItems } from '@layouts/types'
+import type { Component } from 'vue'
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { VNodeRenderer } from './VNodeRenderer'
 
 interface Props {
   tag?: string | Component
@@ -71,7 +71,7 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
     ]"
   >
     <!-- 👉 Header -->
-    <div class="nav-header">
+    <div class="nav-header" >
       <slot name="nav-header">
         <RouterLink
           to="/"
@@ -129,6 +129,7 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
         @ps-scroll-y="handleNavScroll"
       >
         <Component
+         
           :is="resolveNavItemComponent(item)"
           v-for="(item, index) in navItems"
           :key="index"

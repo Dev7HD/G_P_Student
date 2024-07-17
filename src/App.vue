@@ -12,8 +12,8 @@ initCore()
 initConfigStore()
 
 const configStore = useConfigStore()
-useCookie('accessToken').value = import.meta.env.VITE_API_TOKEN
-// console.log(useCookie('accessToken').value);
+
+
 </script>
 
 <template>

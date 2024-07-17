@@ -19,7 +19,7 @@ export const getLatestBarChartConfig = (themeColors: ThemeInstance['themes']['va
   return {
     responsive: true,
     maintainAspectRatio: false,
-    animation: { duration: 500 },
+    animation: { duration: 1500 },
     scales: {
       x: {
         grid: {
@@ -31,14 +31,14 @@ export const getLatestBarChartConfig = (themeColors: ThemeInstance['themes']['va
       },
       y: {
         min: 0,
-        max: 100000,
+        max: 50000,
         grid: {
           borderColor,
           drawBorder: false,
           color: borderColor,
         },
         ticks: {
-          stepSize: 50000,
+          stepSize: 10000,
           color: labelColor,
         },
       },

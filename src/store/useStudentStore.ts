@@ -1,6 +1,5 @@
 import { Payment, Student } from "@/@core/types";
-import axios from "axios";
-
+import axiosIns from '@/plugins/axiosIns';
 export const useStudentStore = defineStore('Student', () => {
     const isLoading = ref(false)
     const listeStudents = ref<Student>(null);
@@ -39,17 +38,17 @@ export const useStudentStore = defineStore('Student', () => {
       }
 
       async function getPdfFile(idPayment:string){
-         return  axios.get(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/paymentFile/${idPayment}`,{
+         return  axiosIns.get(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/paymentFile/${idPayment}`,{
          responseType :'blob'})
          
       }
 
         async function updateOne(payload:Student){        
-           await axios.put(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/edit`,payload)     
+           await axiosIns.put(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/edit`,payload)     
       }
 
         async function deleteOne(code:string){
-          await axios.delete(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/delete/${code}`)
+          await axiosIns.delete(`${import.meta.env.VITE_SPRING_BOOT_API_URL}/student/delete/${code}`)
         }
 
     return {listeStudents, listeStudentPayments, isLoading,fetchOne,deleteOne ,getPdfFile, fetchAll,fetchStudentPayments,updateOne,addPayment}

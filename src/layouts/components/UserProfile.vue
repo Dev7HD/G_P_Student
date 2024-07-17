@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import user1 from '@images/user.jpg';
+import { useUserStore } from '@/store/useUserStore';
+
+// import user1 from '@images/me.jpg';
 
 const router = useRouter()
-
+// const role = ref(useCookie('role').value)
 const logout = async () => {
-  useCookie('token').value = null
-  useCookie('user').value = null
+  useCookie('accessToken').value = null
+  useCookie('role').value = null
   await router.push('/login')
-  
-
-  
 }
-const user = useCookie("user").value
 const userProfileList = [
   { type: 'divider' },
   { type: 'navItem', icon: 'tabler-user', title: 'Profile', to: { name: 'apps-user-view-id', params: { id: 21 } } },
@@ -21,6 +19,9 @@ const userProfileList = [
   { type: 'navItem', icon: 'tabler-currency-dollar', title: 'Pricing', to: { name: 'pages-pricing' } },
   { type: 'navItem', icon: 'tabler-question-mark', title: 'FAQ', to: { name: 'pages-faq' } },
 ]
+console.log(useUserStore().role);
+
+
 </script>
 
 
@@ -38,8 +39,8 @@ const userProfileList = [
       color="primary"
       variant="tonal"
     >
-      <VImg :src="user1"/>
-
+    <VIcon v-if="useUserStore().role=='admin'" icon="tabler-user-cog"/> 
+    <VIcon v-else icon="tabler-user"/> 
       <!-- SECTION Menu -->
       <VMenu
         activator="parent"
@@ -63,16 +64,23 @@ const userProfileList = [
                     color="primary"
                     variant="outlined"
                   >
-                  <VImg :src="user1"/>
+                  <VIcon v-if="useUserStore().role=='admin'" icon="tabler-user-cog"/> 
+                  <VIcon v-if="useUserStore().role=='student'" icon="tabler-user"/> 
+
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
-
-            <VListItemTitle class="font-weight-bold text-uppercase">
-              {{user ? user : "not Found"}}
+            <VListItemTitle v-if="useUserStore().role == 'admin'" class="font-weight-bold text-uppercase">
+              {{ 'M.FALL HACHIM'}}
             </VListItemTitle>
-            <VListItemSubtitle>{{user ? "ADMINISTRATEUR" : "UTILISATEUR"}}</VListItemSubtitle>
+            <VListItemTitle v-if="useUserStore().role=='student'" class="font-weight-bold text-uppercase">
+              {{ "BISSI OUSSAMA"}}
+            </VListItemTitle>
+            <VListItemSubtitle v-if="useUserStore().role == 'admin'">
+              {{"ADMIN"}}
+            </VListItemSubtitle>
+            <VListItemSubtitle v-else>{{"STUDENT"}}</VListItemSubtitle>
           </VListItem>
 
           <!-- 👉 Logout -->

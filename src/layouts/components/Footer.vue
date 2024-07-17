@@ -8,7 +8,7 @@
         href=""
         rel="noopener noreferrer"
         class="text-primary font-weight-bold ms-1"
-      >BISSI OUSSAMA <span class="font-weight-light">et</span> HASSANI ASMAE</span>
+      >BISSI OUSSAMA <span class="font-weight-light">et</span> HASSANI ASMAA</span>
     </span>
 
    
