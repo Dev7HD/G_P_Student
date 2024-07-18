@@ -81,7 +81,6 @@ const getAvatarText = (prenom: string, nom: string) => {
   return initials;
 }
 
-//👉 - Methode for adding a verification to datatable
 
 const isDialogVisible  = ref(false);
 
@@ -92,23 +91,23 @@ const showModalAjout = () => {
 
 const studentsList = ref([])
 const loading = ref(false) 
-const GetData = () => {
+const GetData = () => {  
   studentsList.value = listeStudentPayments.value.map(item => {    
     return {
       ...item,
       pdfUrl: `${item.receipt}`
     }
   })
-
 }
+
+// watch(studentsList,(val)=>sortByDate())
 
 const sortByDate = () => {
-  listeStudentPayments.value.sort((a, b) => {
-    const date1 = new Date(a.date)
-    const date2 = new Date(b.date)    
-    return new Date(date2).getDate() - new Date(date1).getDate()
+  studentsList.value.sort((a, b) => {
+    return dayjs(b.date).isAfter(dayjs(a.date)) ? 1 : -1;
   });
 }
+
 
 const addPaiement = async(obj)=>{    
       try {
@@ -205,8 +204,11 @@ onMounted(() => {
       <!-- 👉 Data Table  -->
       <div v-else>
         <div v-if="listeStudentPayments.length > 0">
-          <VDataTable :loading="loading"  :headers="headers" :items="studentsList" :search="search"
-            v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap">
+          <VDataTable   
+          
+          :loading="loading"  :headers="headers" :items="studentsList" :search="search"
+            v-model:options="options" :items-per-page="options.itemsPerPage" :page="options.page" class="text-no-wrap"
+            >
 
            
 

@@ -80,8 +80,11 @@ const getAvatarText = (prenom: string, nom: string) => {
   const initials = (prenomInitial + nomInitial).toUpperCase();
   return initials;
 }
-
-//👉 - Methode for adding a verification to datatable
+const sortByDate = () => {
+  studentsList.value.sort((a, b) => {
+    return dayjs(b.date).isAfter(dayjs(a.date)) ? 1 : -1;
+  });
+}
 
 const isDialogVisible  = ref(false);
 
@@ -112,6 +115,7 @@ const addPaiement = async(obj)=>{
         fetchStudentPayments(route.params.code).then((res)=>{
         setTimeout(() => {
           GetData()
+          sortByDate()
           loading.value = false
         }, 1000)
       })
@@ -144,6 +148,7 @@ onMounted(() => {
       fetchStudentPayments(route.params.code).then((res)=>{
         setTimeout(() => {
           GetData()
+          sortByDate()
           loading.value = false
         }, 1000);   
       })   

@@ -15,7 +15,11 @@ const store = usePaymentStore()
 const { listePayments, isLoading,error } = storeToRefs(store)
 const { fetchAll,editStatusPayment } = store
 
-
+const sortByDate = () => {
+  paymentsList.value.sort((a, b) => {
+    return dayjs(b.date).isAfter(dayjs(a.date)) ? 1 : -1;
+  });
+}
 
 //👉 -  Options Pagination
 const options = ref({
@@ -33,14 +37,6 @@ const handleChange = () => {
 //👉 - Dialogs variables
 const studentData = ref<Student>({})
 const isEditStatusDialogVisible = ref(false)
-
-//👉 - Methode for handling a verification type
-const resolveStatusVerification = (idVerification: number) => {
-  if (idVerification === null)
-    return { text: 'Non Verifiée', color: 'error', icon: 'tabler-ban' }
-  else
-    return { text: 'Verifiée', color: 'success', icon: 'tabler-check' }
-}
 
 //👉 - Data table options
 const itemsPerPage = ref(5)
@@ -77,13 +73,6 @@ const resolveType = (type: string) => {
 }
 
 const isEditDialogVisible = ref(false)
-// SECTION METHODES
-//👉 - Methode for deleting an Item 
-const deleteItem = (itemId: number) => {
-  if (!props.verificationsList)
-    return
-  console.log(itemId)
-}
 
 
 const editPayment = ref<Payment>({})
@@ -108,12 +97,6 @@ const getAvatarText = (prenom: string, nom: string) => {
   return initials;
 }
 
-
-//👉 - Methode for adding a verification to datatable
-const router = useRouter()
-const addVerification = () => {
-  router.push('/new-verification')
-}
 
 
 //👉 - Methode for export data to Excell
@@ -152,6 +135,7 @@ onMounted(() => {
       fetchAll().then((res)=>{
         setTimeout(() => {
           GetData()
+          sortByDate()
           loading.value = false
         }, 1000);
       })

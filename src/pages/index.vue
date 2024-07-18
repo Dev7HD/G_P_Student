@@ -1,19 +1,19 @@
 <template>
 <VCard class="mb-6">
-      <VCardText class=" d-flex  ">
+      <VCardText class=" d-flex flex-column flex-sm-row">
         <img
           :src="academyCourseIllustration1"
-          height="150"
+          :height="$vuetify.display.smAndUp ? '240' : '200'"
         >
         <div
-          class="d-flex flex-column gap-y-4 justify-center mx-auto"
+          class="d-flex flex-column gap-y-4 justify-center mx-13"
         >
           <h4
-            class="text-h4 text-center text-uppercase text-wrap mx-auto"
+            class="text-h6 text-center  text-wrap mx-auto letter-spacin text-sm-h4 "
           >
-          <span class="text-decoration-underline text-primary text-no-wrap">gestion des paiements des étudiants.</span>
+          <span class="text-primary text-uppercase"><span class='sizing'>g</span>estion <span class='sizing'>d</span>es <span class='sizing'>p</span>aiements <span class='sizing'>d</span>es <span class='sizing'>é</span>tudiants.</span>
           </h4>
-          <p class="text-center text-wrap text-body-1 mx-auto mb-0">
+          <p class="text-center text-wrap text-body-1 mx-auto mb-0 letter-spacing">
             Simplifiez la gestion de vos finances étudiantes avec notre solution intuitive et sécurisée. </p>
         </div>
         
@@ -69,6 +69,7 @@
 
 
 <script setup lang="ts">
+import { useConfigStore } from '@/@core/stores/config'
 import StudentPaymentsList from '@/components/students/StudentPaymentsList.vue'
 import axiosIns from '@/plugins/axiosIns'
 import { useUserStore } from '@/store/useUserStore'
@@ -183,7 +184,6 @@ async function processDataByStatus(): Promise<any> {
   }
 }
 
-
 const role = ref(useUserStore().role)
 console.log(role.value);
 watch(role,(newVal,oldVal)=>{
@@ -202,7 +202,10 @@ const dataSetsByStatus = ref(null)
   
 onMounted(()=>{  
   useUserStore().setRole(useCookie("role").value)
+  useConfigStore().isVerticalNavCollapsed=true
+  
   if (useUserStore().role == 'admin') {
+    useConfigStore().isVerticalNavCollapsed=false
     processData().then(res=>{
     dataSets.value = res
   })
@@ -215,3 +218,12 @@ const chartConfig = computed(() => getPolarChartConfig(vuetifyTheme.current.valu
 const chartConfigBar = computed(() => getLatestBarChartConfig(vuetifyTheme.current.value))
 </script>
 
+<style lang="scss">
+.sizing{
+  font-size: 2.5rem;
+}
+.letter-spacing{
+  letter-spacing: 3px !important;
+    word-spacing: 5px;
+}
+</style>
