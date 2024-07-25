@@ -28,7 +28,7 @@ const generateRandomToken = () => {
 
 const token = ref("")
 const logIn = async ()=>{
-  if(form.value.username === 'bissi_ouss')form.value.username = 'student'
+ 
     const res = await axios.post(import.meta.env.VITE_SPRING_BOOT_API_URL+"/auth/login?username="+form.value.username+"&password="+form.value.password)
     useCookie("accessToken").value=res.data["access_token"]
     await router.push({name:"root"})

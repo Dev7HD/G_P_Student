@@ -142,8 +142,9 @@ refForm.value?.validate().then(({ valid }) => {
             <VCol cols="12">
               <!-- <VuePDF v-if="urlImg" :pdf="pdf" /> -->
               <vue-pdf-app
+              isSidebarHidden=true
                 v-if="urlImg"
-                style="height: 100vh"
+                style="height: 30vh"
                 :pdf="urlImg"
               ></vue-pdf-app>
             </VCol>

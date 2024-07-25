@@ -50,7 +50,7 @@ watch(props, () => {
       <VCardText>
         <VRow>
           <VCol cols="12">
-            <vue-pdf-app v-if="props.pdfUrl"  style="height: 100vh;" :pdf="props.pdfUrl"></vue-pdf-app>
+            <vue-pdf-app v-if="props.pdfUrl"  style="height: 50vh;" :pdf="props.pdfUrl"></vue-pdf-app>
           </VCol>
      
         </VRow>

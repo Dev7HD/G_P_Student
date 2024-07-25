@@ -65,7 +65,7 @@ console.log(useUserStore().role);
                     variant="outlined"
                   >
                   <VIcon v-if="useUserStore().role=='admin'" icon="tabler-user-cog"/> 
-                  <VIcon v-if="useUserStore().role=='student'" icon="tabler-user"/> 
+                  <VIcon v-if="useUserStore().role=='bissi_ouss'" icon="tabler-user"/> 
 
                   </VAvatar>
                 </VBadge>
@@ -74,7 +74,7 @@ console.log(useUserStore().role);
             <VListItemTitle v-if="useUserStore().role == 'admin'" class="font-weight-bold text-uppercase">
               {{ 'M.FALL HACHIM'}}
             </VListItemTitle>
-            <VListItemTitle v-if="useUserStore().role=='student'" class="font-weight-bold text-uppercase">
+            <VListItemTitle v-else class="font-weight-bold text-uppercase">
               {{ "BISSI OUSSAMA"}}
             </VListItemTitle>
             <VListItemSubtitle v-if="useUserStore().role == 'admin'">

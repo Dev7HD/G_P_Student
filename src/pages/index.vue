@@ -59,7 +59,7 @@
     </VCol>
    
   </VRow>
-<VRow v-if="useCookie('role').value =='student'">
+<VRow v-if="useCookie('role').value =='bissi_ouss'">
   <VCol cols="12" >
     <StudentPaymentsList/>
   </VCol>
